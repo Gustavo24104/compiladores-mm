@@ -16,4 +16,8 @@ public class Token {
         coluna =-1;
     }
 
+    @Override
+    public String toString() {
+        return tokenType.name() + "( " + lexema + " ) " + "[ " + linha + ", " + coluna + " ]";
+    }
 }
