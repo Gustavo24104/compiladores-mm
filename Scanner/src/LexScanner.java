@@ -87,6 +87,38 @@ public class LexScanner {
 
     // ai aqui tem q olhar pro proximo pra saber se continua ou nao
     private Token analisarString() {
+        int inicioL = linha, inicioC = coluna;
+
+        if(posAtual != '"') {
+            System.out.println("Erro léxico! String não iniciada em aspas!");
+            return null;
+        }
+
+        posAtual++;
+
+        while(posAtual < input.length()) {
+            char c = input.charAt(posAtual);
+            lexema.append(c);
+            coluna++;
+            posAtual++;
+
+            if (c == '"') {
+                return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
+            }
+
+            if(c == '\n') {
+                System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
+                linha++;
+                coluna = 1;
+                lexema.setLength(0);
+
+            }
+        }
+
+        System.out.println("ERRO lexico. EOF, string nao encerrada");
+        lexema.setLength(0);
+
+
         return null;
     }
 
