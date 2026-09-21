@@ -3,12 +3,12 @@ public enum TokenType {
     INT_LIT,
     FLOAT_LIT,
     STRING_LIT,
-    EQ_SYM, //     =
+    EQ_SYM, //     ==
     PLUS_SYM, //   +
     MINUS_SYM, //  -
     MULT_SYM, //   *
     DIV_SYM, //    /
-    ATRIB, //      ==
+    ATRIB, //      =
 
     // palavras reservadas
     IF_KEYWORD,

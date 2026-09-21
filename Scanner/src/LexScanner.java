@@ -14,6 +14,7 @@ public class LexScanner {
     HashMap<String, TokenType> palavrasReservadas = new HashMap<>();
 
 
+
     public LexScanner(String input) {
         this.input = input;
         output = new ArrayList<Token>();
@@ -35,6 +36,7 @@ public class LexScanner {
         palavrasReservadas.put("]", TokenType.FECHA_COLCHETE);
         palavrasReservadas.put(";", TokenType.PONTO_E_VIRGULA);
         palavrasReservadas.put(",", TokenType.VIRGULA);
+        palavrasReservadas.put(".", TokenType.PONTO);
     }
 
     public ArrayList<Token> analisar() {
@@ -113,10 +115,10 @@ public class LexScanner {
             if(posAtual < input.length() && input.charAt(posAtual) == '=') {
                 posAtual++;
                 lexema.append('=');
-                return new Token(lexema.toString(), TokenType.ATRIB, linha, coluna);
+                return new Token(lexema.toString(), TokenType.EQ_SYM, linha, coluna);
             }
 
-            return new Token(lexema.toString(), TokenType.EQ_SYM, linha, coluna);
+            return new Token(lexema.toString(), TokenType.ATRIB, linha, coluna);
         }
         return null;
     }
@@ -168,27 +170,23 @@ public class LexScanner {
             char c = input.charAt(posAtual);
             if(Character.isDigit(c)) {
                 lexema.append(c);
-                coluna++;
                 posAtual++;
-            } else if ((c == '.') && (ehFloat == false)) {
+            } else if ((c == '.') && (!ehFloat)) {
                 if((posAtual + 1 < input.length()) && (Character.isDigit(input.charAt(posAtual+1)))) {
                     ehFloat = true;
                     lexema.append(c);
-                    coluna++;
                     posAtual++;
-                } 
-                System.out.println("Erro léxico! String com números no começo!");
-                lexema.setLength(0);
-                return null;
-            }
-            if(ehFloat) {
-                return new Token(lexema.toString(), TokenType.FLOAT_LIT, inicioL, inicioC);
-                
+                }
             } else {
-                return new Token(lexema.toString(), TokenType.INT_LIT, inicioL, inicioC);
+                break;
             }
         }
-        return null;
+        coluna = posAtual;
+        if(ehFloat) {
+            return new Token(lexema.toString(), TokenType.FLOAT_LIT, inicioL, inicioC);
+        } else {
+            return new Token(lexema.toString(), TokenType.INT_LIT, inicioL, inicioC);
+        }
     }
 
     // ai aqui usa um hash de palavras chaves
@@ -232,7 +230,7 @@ public class LexScanner {
 
 
     static void main() {
-        LexScanner sc = new LexScanner("string a = \"Hello world!\";\n int _under = 3*4;");
+        LexScanner sc = new LexScanner("if ( 12;42 )");
         var Resultados = sc.analisar();
         for (var r : Resultados) {
             System.out.println(r);
