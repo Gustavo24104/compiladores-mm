@@ -50,6 +50,8 @@ public class LexScanner {
                 coluna = 1;
                 linha += 1;
                 lexema.setLength(0);
+                posAtual++;
+                continue;
             }
 
             else if(cAtual == ';'){
@@ -82,7 +84,6 @@ public class LexScanner {
             }
             if(encontrado != null) {
                 output.add(encontrado);
-                System.out.println(encontrado);
                 lexema.setLength(0);
             } else {
                 System.out.println("Erro lexico! Caractere inesperado na linha " + linha + " e coluna " + coluna);
@@ -94,7 +95,6 @@ public class LexScanner {
 
 
     private Token analisarOp() {
-        System.out.println("operador");
         if(cAtual == '+') {
             posAtual++;
             return new Token(lexema.toString(), TokenType.PLUS_SYM, linha, coluna);
@@ -126,7 +126,7 @@ public class LexScanner {
     private Token analisarString() {
         int inicioL = linha, inicioC = coluna;
 
-        if(posAtual != '"') {
+        if(cAtual != '"') {
             System.out.println("Erro léxico! String não iniciada em aspas!");
             return null;
         }
@@ -232,7 +232,10 @@ public class LexScanner {
 
 
     static void main() {
-        LexScanner sc = new LexScanner("ab cd ef * 2 == 32");
-        sc.analisar();
+        LexScanner sc = new LexScanner("string a = \"Hello world!\";\n int _under = 3*4;");
+        var Resultados = sc.analisar();
+        for (var r : Resultados) {
+            System.out.println(r);
+        }
     }
 }
