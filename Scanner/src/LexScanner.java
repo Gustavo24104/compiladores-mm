@@ -151,6 +151,34 @@ public class LexScanner {
     }
 
     private Token analisarLiteral() {
+
+        int inicioL = linha, inicioC = coluna, ehFloat = 0;
+        posAtual++;
+
+        while(posAtual < input.length()) {
+            char c = input.charAt(posAtual);
+            if(Character.isDigit(c)) {
+                lexema.append(c);
+                coluna++;
+                posAtual++;
+            } else if ((c == '.') && (ehFloat == 0)) {
+                if((posAtual + 1 < input.length()) && (Character.isDigit(input.charAt(posAtual+1)))) {
+                    ehFloat = 1;
+                    lexema.append(c);
+                    coluna++;
+                    posAtual++;
+                } 
+                System.out.println("Erro léxico! String com números no começo!");
+                lexema.setLength(0);
+                return null;
+            }
+            if(ehFloat) {
+                return new Token(lexema.toString(), TokenType.FLOAT_LIT, inicioL, inicioC);
+                
+            } else {
+                return new Token(lexema.toString(), TokenType.INT_LIT, inicioL, inicioC);
+            }
+        }
         return null;
     }
 
