@@ -8,6 +8,7 @@ public enum TokenType {
     MINUS_SYM, //  -
     MULT_SYM, //   *
     DIV_SYM, //    /
+    ATRIB, //      ==
 
     // palavras reservadas
     IF_KEYWORD,

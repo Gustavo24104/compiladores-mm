@@ -1,5 +1,6 @@
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class LexScanner {
@@ -10,12 +11,31 @@ public class LexScanner {
     StringBuilder lexema;
     String input;
     char cAtual = ' ';
+    HashMap<String, TokenType> palavrasReservadas = new HashMap<>();
+
 
 
     public LexScanner(String input) {
         this.input = input;
         output = new ArrayList<Token>();
         lexema = new StringBuilder();
+        palavrasReservadas.put("if", TokenType.IF_KEYWORD);
+        palavrasReservadas.put("else", TokenType.ELSE_KEYWORD);
+        palavrasReservadas.put("while", TokenType.WHILE_KEYWORD);
+        palavrasReservadas.put("for", TokenType.FOR_KEYWORD);
+        palavrasReservadas.put("int", TokenType.INT_KEYWORD);
+        palavrasReservadas.put("float", TokenType.FLOAT_KEYWORD);
+        palavrasReservadas.put("string", TokenType.STRING_KEYWORD);
+        palavrasReservadas.put("return", TokenType.RETURN_KEYWORD);
+        palavrasReservadas.put("void", TokenType.VOID_KEYWORD);
+        palavrasReservadas.put("(", TokenType.ABRE_PARENTESES);
+        palavrasReservadas.put(")", TokenType.FECHA_PARENTESES);
+        palavrasReservadas.put("{", TokenType.ABRE_CHAVES);
+        palavrasReservadas.put("}", TokenType.FECHA_CHAVES);
+        palavrasReservadas.put("[", TokenType.ABRE_COLCHETE);
+        palavrasReservadas.put("]", TokenType.FECHA_COLCHETE);
+        palavrasReservadas.put(";", TokenType.PONTO_E_VIRGULA);
+        palavrasReservadas.put(",", TokenType.VIRGULA);
     }
 
     public ArrayList<Token> analisar() {
@@ -65,7 +85,7 @@ public class LexScanner {
 
     }
 
-    // todo operador so tem tamanho 1 (teoricamente), ent da menos problema
+
     private Token analisarOp() {
         System.out.println("operador");
         if(cAtual == '+') {
@@ -80,6 +100,16 @@ public class LexScanner {
         } else if (cAtual == '*') {
             posAtual++;
             return new Token(lexema.toString(), TokenType.MULT_SYM, linha, coluna);
+        } else if(cAtual == '=') {
+            posAtual++;
+
+            if(posAtual < input.length() && input.charAt(posAtual) == '=') {
+                posAtual++;
+                lexema.append('=');
+                return new Token(lexema.toString(), TokenType.ATRIB, linha, coluna);
+            }
+
+            return new Token(lexema.toString(), TokenType.EQ_SYM, linha, coluna);
         }
         return null;
     }
@@ -117,8 +147,6 @@ public class LexScanner {
 
         System.out.println("ERRO lexico. EOF, string nao encerrada");
         lexema.setLength(0);
-
-
         return null;
     }
 
@@ -128,12 +156,20 @@ public class LexScanner {
 
     // ai aqui usa um hash de palavras chaves
     private Token analisarIdentificadorOuKeyword() {
+        posAtual++;
+
+        while (posAtual < input.length() && cAtual != '+' && cAtual != '-' &&
+            cAtual != '*' && cAtual != '/' && cAtual != '=' && cAtual != ' ' && cAtual != ';') {
+
+        }
+
+        System.out.println(lexema.toString());
         return null;
     }
 
 
     static void main() {
-        LexScanner sc = new LexScanner("+-");
+        LexScanner sc = new LexScanner("id");
         sc.analisar();
     }
 }
