@@ -1,3 +1,4 @@
+import java.io.EOFException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ public class LexScanner {
     ArrayList<Token> output;
     StringBuilder lexema;
     String input;
-    char cAtual = ' ';
     HashMap<String, TokenType> palavrasReservadas = new HashMap<>();
 
 
@@ -42,54 +42,8 @@ public class LexScanner {
     public ArrayList<Token> analisar() {
         ArrayList<Token> output = new ArrayList<>();
 
-        while(posAtual < input.length()) {
-            cAtual = input.charAt(posAtual); // nota q o posAtual so eh atualizado dps
-            coluna += 1;
-            Token encontrado = null;
-
-            lexema.append(cAtual);
-            if(cAtual == '\n') {
-                coluna = 1;
-                linha += 1;
-                lexema.setLength(0);
-                posAtual++;
-                continue;
-            }
-
-            else if(cAtual == ';'){
-                output.add(new Token(";", TokenType.PONTO_E_VIRGULA, linha, coluna));
-                lexema.setLength(0);
-                posAtual++;
-                continue;
-            }
-
-            else if(cAtual == ' ') {
-                posAtual++;
-                lexema.setLength(0);
-                continue;
-            }
-
-            else if(cAtual == '"') {
-                encontrado = analisarString();
-            }
-
-            else if(Character.isDigit(cAtual)) {
-                encontrado = analisarLiteral();
-            }
-
-            else if(cAtual == '+' || cAtual == '-' || cAtual == '*' || cAtual == '/' || cAtual == '=') {
-                encontrado = analisarOp();
-            }
-
-            else {
-                encontrado = analisarIdentificadorOuKeyword();
-            }
-            if(encontrado != null) {
-                output.add(encontrado);
-                lexema.setLength(0);
-            } else {
-                System.out.println("Erro lexico! Caractere inesperado na linha " + linha + " e coluna " + coluna);
-            }
+        while(hasNext()) {
+            output.add(nextToken());
         }
         return output;
 
@@ -97,27 +51,21 @@ public class LexScanner {
 
 
     private Token analisarOp() {
-        if(cAtual == '+') {
-            posAtual++;
+        char c = advance();
+        if(c == '+') {
             return new Token(lexema.toString(), TokenType.PLUS_SYM, linha, coluna);
-        } else if(cAtual == '-') {
-            posAtual++;
+        } else if(c == '-') {
             return new Token(lexema.toString(), TokenType.MINUS_SYM, linha, coluna);
-        } else if (cAtual == '/') {
-            posAtual++;
+        } else if (c == '/') {
             return new Token(lexema.toString(), TokenType.DIV_SYM, linha, coluna);
-        } else if (cAtual == '*') {
-            posAtual++;
+        } else if (c == '*') {
             return new Token(lexema.toString(), TokenType.MULT_SYM, linha, coluna);
-        } else if(cAtual == '=') {
-            posAtual++;
-
-            if(posAtual < input.length() && input.charAt(posAtual) == '=') {
-                posAtual++;
+        } else if(c== '=') {
+            if(hasNext() && peek() == '=') {
+                advance();
                 lexema.append('=');
                 return new Token(lexema.toString(), TokenType.EQ_SYM, linha, coluna);
             }
-
             return new Token(lexema.toString(), TokenType.ATRIB, linha, coluna);
         }
         return null;
@@ -128,54 +76,53 @@ public class LexScanner {
     private Token analisarString() {
         int inicioL = linha, inicioC = coluna;
 
-        if(cAtual != '"') {
+        if(peek() != '"') {
             System.out.println("Erro léxico! String não iniciada em aspas!");
             return null;
         }
 
-        posAtual++;
+        advance();
 
-        while(posAtual < input.length()) {
-            char c = input.charAt(posAtual);
+        while(hasNext()) {
+            char c = advance();
             lexema.append(c);
-            coluna++;
-            posAtual++;
 
             if (c == '"') {
                 return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
             }
 
             if(c == '\n') {
+                // TODO: Transformar em exception
                 System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
                 linha++;
                 coluna = 1;
                 lexema.setLength(0);
-
             }
         }
-
+        // TODO: Transformar em exception
         System.out.println("ERRO lexico. EOF, string nao encerrada");
         lexema.setLength(0);
         return null;
     }
+
 
     private Token analisarLiteral() {
 
         int inicioL = linha;
         int inicioC = coluna;
         boolean ehFloat = false;
-        posAtual++;
+        advance();
 
-        while(posAtual < input.length()) {
-            char c = input.charAt(posAtual);
+        while(hasNext()) {
+            char c = peek();
             if(Character.isDigit(c)) {
                 lexema.append(c);
-                posAtual++;
+                advance();
             } else if ((c == '.') && (!ehFloat)) {
-                if((posAtual + 1 < input.length()) && (Character.isDigit(input.charAt(posAtual+1)))) {
+                if(Character.isDigit(lookAhead())) {
                     ehFloat = true;
                     lexema.append(c);
-                    posAtual++;
+                    advance();
                 }
             } else {
                 break;
@@ -191,27 +138,27 @@ public class LexScanner {
 
     // ai aqui usa um hash de palavras chaves
     private Token analisarIdentificadorOuKeyword() {
+        char cAtual;
         // identificadores de 1 letra
-        if(palavrasReservadas.get(Character.toString(cAtual)) != null) {
-            posAtual++;
-            return new Token(lexema.toString(), palavrasReservadas.get(Character.toString(cAtual)), linha, coluna);
+        if(palavrasReservadas.get(Character.toString(peek())) != null) {
+            return new Token(lexema.toString(), palavrasReservadas.get(Character.toString(advance())), linha, coluna);
         }
 
-        while(posAtual < input.length()) {
+        while(hasNext()) {
             if (posAtual + 1 < input.length()) {
-                char proxC = input.charAt(posAtual + 1);
+                char proxC = lookAhead();
                 if (proxC == '+' || proxC == '-' ||
                         proxC == '*' || proxC == '/' || proxC == '=' || proxC == ' ' || proxC == ';' ||
                         (palavrasReservadas.get(Character.toString(proxC)) != null)) {
-                    posAtual++;
+                    advance();
                     break;
                 } else {
                     cAtual = proxC;
-                    posAtual++;
+                    advance();
                     lexema.append(cAtual);
                 }
             } else {
-                posAtual++;
+                advance();
             }
         }
         // agr eh definir se eh identificador ou reservado
@@ -223,14 +170,87 @@ public class LexScanner {
         } else {
             out = new Token(lexema.toString(), tokenEncontrado, linha, coluna);
         }
-        coluna = posAtual;
         lexema.setLength(0);
         return out;
     }
 
+    private char peek() {
+        return input.charAt(posAtual);
+    }
+
+    // TODO: Falta o "andComments"
+    private void skipWhitespace() {
+        while(peek() == ' ') {
+            advance();
+        }
+    }
+
+    private Token nextToken() {
+        skipWhitespace();
+        Token encontrado = null;
+        lexema.append(peek());
+        if(peek() == '\n') {
+            lexema.setLength(0);
+            advance();
+        }
+        else if(peek() == ';'){
+           encontrado = new Token(";", TokenType.PONTO_E_VIRGULA, linha, coluna);
+            lexema.setLength(0);
+            advance();
+        }
+        else if(peek() == ' ') {
+            advance();
+            lexema.setLength(0);
+        }
+        else if(peek() == '"') {
+            encontrado = analisarString();
+        }
+        else if(Character.isDigit(peek())) {
+            encontrado = analisarLiteral();
+        }
+        else if(peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '=') {
+            encontrado = analisarOp();
+        }
+        else {
+            encontrado = analisarIdentificadorOuKeyword();
+        }
+        if(encontrado != null) {
+            lexema.setLength(0);
+            return encontrado;
+        } else {
+            System.out.println("Erro lexico! Caractere inesperado na linha " + linha + " e coluna " + coluna);
+            return null;
+        }
+    }
+
+    private char advance() {
+        if(hasNext()){
+            char out = input.charAt(posAtual++);
+            if(out == '\n') {
+                linha++;
+                coluna = 1;
+            }
+            coluna++;
+            return out;
+        } else {
+            throw new RuntimeException("Fim de arquivo!");
+        }
+    }
+
+    private char lookAhead() {
+        if(posAtual + 1 < input.length()){
+            return input.charAt(posAtual + 1);
+        } else {
+            throw new RuntimeException("Fim de arquivo!");
+        }
+    }
+
+    private boolean hasNext() {
+        return posAtual < input.length();
+    }
 
     static void main() {
-        LexScanner sc = new LexScanner("if ( 12;42 )");
+        LexScanner sc = new LexScanner("if ( 124323.4 3.42 =;= 42 )");
         var Resultados = sc.analisar();
         for (var r : Resultados) {
             System.out.println(r);
