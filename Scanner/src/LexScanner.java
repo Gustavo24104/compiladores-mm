@@ -1,23 +1,17 @@
-import java.io.EOFException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class LexScanner {
 
 //    String input;
     int linha = 1, coluna = 0, posAtual = 0;
-    ArrayList<Token> output;
     StringBuilder lexema;
     String input;
     HashMap<String, TokenType> palavrasReservadas = new HashMap<>();
 
 
-
     public LexScanner(String input) {
         this.input = input;
-        output = new ArrayList<Token>();
         lexema = new StringBuilder();
         palavrasReservadas.put("if", TokenType.IF_KEYWORD);
         palavrasReservadas.put("else", TokenType.ELSE_KEYWORD);
@@ -39,17 +33,7 @@ public class LexScanner {
         palavrasReservadas.put(".", TokenType.PONTO);
     }
 
-    public ArrayList<Token> analisar() {
-        ArrayList<Token> output = new ArrayList<>();
-
-        while(hasNext()) {
-            output.add(nextToken());
-        }
-        return output;
-
-    }
-
-
+    // cada função aqui funciona como um dos estados
     private Token analisarOp() {
         char c = advance();
         if(c == '+') {
@@ -70,7 +54,6 @@ public class LexScanner {
         }
         return null;
     }
-
 
     // ai aqui tem q olhar pro proximo pra saber se continua ou nao
     private Token analisarString() {
@@ -105,7 +88,6 @@ public class LexScanner {
         return null;
     }
 
-
     private Token analisarLiteral() {
 
         int inicioL = linha;
@@ -128,7 +110,7 @@ public class LexScanner {
                 break;
             }
         }
-        coluna = posAtual;
+//        coluna = posAtual;
         if(ehFloat) {
             return new Token(lexema.toString(), TokenType.FLOAT_LIT, inicioL, inicioC);
         } else {
@@ -173,53 +155,65 @@ public class LexScanner {
         lexema.setLength(0);
         return out;
     }
-
+    
     private char peek() {
-        return input.charAt(posAtual);
+        if(hasNext()) {
+            return input.charAt(posAtual);
+        }
+        return ' ';
     }
 
-    // TODO: Falta o "andComments"
-    private void skipWhitespace() {
-        while(peek() == ' ') {
+
+    private void skipWhitespaceAndComments() {
+        while(peek() == ' ' || peek() == '\n') {
             advance();
+        }
+        if(peek() == '@') {
+            while(hasNext() && peek() != '\n') {
+                advance();
+            }
+            // chegou no \n precisa de um ultimo advance
+            if(hasNext() && peek() == '\n') {
+                advance();
+            }
         }
     }
 
-    private Token nextToken() {
-        skipWhitespace();
-        Token encontrado = null;
-        lexema.append(peek());
-        if(peek() == '\n') {
-            lexema.setLength(0);
-            advance();
-        }
-        else if(peek() == ';'){
-           encontrado = new Token(";", TokenType.PONTO_E_VIRGULA, linha, coluna);
-            lexema.setLength(0);
-            advance();
-        }
-        else if(peek() == ' ') {
-            advance();
-            lexema.setLength(0);
-        }
-        else if(peek() == '"') {
-            encontrado = analisarString();
-        }
-        else if(Character.isDigit(peek())) {
-            encontrado = analisarLiteral();
-        }
-        else if(peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '=') {
-            encontrado = analisarOp();
-        }
-        else {
-            encontrado = analisarIdentificadorOuKeyword();
-        }
-        if(encontrado != null) {
-            lexema.setLength(0);
-            return encontrado;
-        } else {
-            System.out.println("Erro lexico! Caractere inesperado na linha " + linha + " e coluna " + coluna);
-            return null;
+    public Token nextToken() {
+        try {
+            skipWhitespaceAndComments();
+            Token encontrado = null;
+            lexema.append(peek());
+//            if(peek() == '\n') {
+//                lexema.setLength(0);
+//                advance();
+//            }
+            /*else*/ if(peek() == ';'){
+                encontrado = new Token(";", TokenType.PONTO_E_VIRGULA, linha, coluna);
+                lexema.setLength(0);
+                advance();
+            }
+            else if(peek() == '"') {
+                encontrado = analisarString();
+            }
+            else if(Character.isDigit(peek())) {
+                encontrado = analisarLiteral();
+            }
+            else if(peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '=') {
+                encontrado = analisarOp();
+            }
+            else {
+                encontrado = analisarIdentificadorOuKeyword();
+            }
+            if(encontrado != null) {
+                lexema.setLength(0);
+                return encontrado;
+            } else {
+                System.out.println("Erro lexico! Caractere inesperado na linha " + linha + " e coluna " + coluna);
+                return null;
+            }
+        } catch (Exception e) {
+            return new Token("\0", TokenType.EOF, linha, coluna);
         }
     }
 
@@ -228,7 +222,7 @@ public class LexScanner {
             char out = input.charAt(posAtual++);
             if(out == '\n') {
                 linha++;
-                coluna = 1;
+                coluna = 0;
             }
             coluna++;
             return out;
@@ -245,14 +239,19 @@ public class LexScanner {
         }
     }
 
-    private boolean hasNext() {
+    public boolean hasNext() {
         return posAtual < input.length();
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("if ( 124323.4 3.42 =;= 42 )");
-        var Resultados = sc.analisar();
-        for (var r : Resultados) {
+        LexScanner sc = new LexScanner("string txt = \"hello world\"; \n @comentario \n int a = 12; \n printf(txt);");
+        var resultados = new ArrayList<Token>();
+
+        while(sc.hasNext()) {
+            resultados.add(sc.nextToken());
+        }
+
+        for (var r : resultados) {
             System.out.println(r);
         }
     }

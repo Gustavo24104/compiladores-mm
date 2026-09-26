@@ -13,13 +13,16 @@ public enum TokenType {
     // palavras reservadas
     IF_KEYWORD,
     ELSE_KEYWORD,
-    WHILE_KEYWORD,
     FOR_KEYWORD,
+    WHILE_KEYWORD,
     INT_KEYWORD,
     FLOAT_KEYWORD,
+    BOOL_KEYWORD,
     STRING_KEYWORD,
     RETURN_KEYWORD,
     VOID_KEYWORD,
+
+    // Delimitadores
     ABRE_PARENTESES,
     FECHA_PARENTESES,
     ABRE_CHAVES,
@@ -29,4 +32,5 @@ public enum TokenType {
     PONTO_E_VIRGULA,
     PONTO,
     VIRGULA,
+    EOF, // A ideia eh saber qdo acaba o arquivo e ter o q retornar nesss casos
 }
