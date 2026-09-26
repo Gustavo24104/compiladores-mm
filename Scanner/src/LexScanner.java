@@ -8,11 +8,10 @@ public class LexScanner {
     StringBuilder lexema;
     String input;
     HashMap<String, TokenType> palavrasReservadas = new HashMap<>();
+    HashMap<String, TokenType> operadores = new HashMap<>();
 
 
-    public LexScanner(String input) {
-        this.input = input;
-        lexema = new StringBuilder();
+    private void popularPalavrasReservadas() {
         palavrasReservadas.put("if", TokenType.IF_KEYWORD);
         palavrasReservadas.put("else", TokenType.ELSE_KEYWORD);
         palavrasReservadas.put("while", TokenType.WHILE_KEYWORD);
@@ -33,26 +32,65 @@ public class LexScanner {
         palavrasReservadas.put(".", TokenType.PONTO);
     }
 
+    private void popularOperadores() {
+        operadores.put("==", TokenType.EQ_SYM);
+        operadores.put("+", TokenType.PLUS_SYM);
+        operadores.put("-", TokenType.MINUS_SYM);
+        operadores.put("*", TokenType.MULT_SYM);
+        operadores.put("/", TokenType.DIV_SYM);
+        operadores.put("%", TokenType.MODULO_SYM);
+        operadores.put("=", TokenType.ATRIB_SYM);
+        operadores.put(">", TokenType.GREAT_SYM);
+        operadores.put("<", TokenType.LESS_SYM);
+        operadores.put(">=", TokenType.GEQ_SYM);
+        operadores.put("<=", TokenType.LEQ_SYM);
+        operadores.put("!=", TokenType.DIFF_SYM);
+        operadores.put("+=", TokenType.PLUS_EQ_SYM);
+        operadores.put("-=", TokenType.MINUS_EQ_SYM);
+        operadores.put("*=", TokenType.MULT_EQ_SYM);
+        operadores.put("/=", TokenType.DIV_EQ_SYM);
+        operadores.put("||", TokenType.LOGICAL_OR_SYM);
+        operadores.put("&&", TokenType.LOGICAL_AND_SYM);
+        operadores.put("!", TokenType.LOGICAL_NOT_SYM);
+        operadores.put("^", TokenType.BITWISE_XOR_SYM);
+        operadores.put("&", TokenType.BITWSISE_AND_SYM);
+        operadores.put("|", TokenType.BITWISE_OR_SYM);
+    }
+
+    public LexScanner(String input) {
+        this.input = input;
+        lexema = new StringBuilder();
+        popularPalavrasReservadas();
+        popularOperadores();
+    }
+
+    private boolean isOp(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '<' ||
+                c == '>' || c == '!' || c == '=' || c == '%' ||
+                c == '|' || c == '&';
+    }
+
     // cada função aqui funciona como um dos estados
+
+
     private Token analisarOp() {
         char c = advance();
-        if(c == '+') {
-            return new Token(lexema.toString(), TokenType.PLUS_SYM, linha, coluna);
-        } else if(c == '-') {
-            return new Token(lexema.toString(), TokenType.MINUS_SYM, linha, coluna);
-        } else if (c == '/') {
-            return new Token(lexema.toString(), TokenType.DIV_SYM, linha, coluna);
-        } else if (c == '*') {
-            return new Token(lexema.toString(), TokenType.MULT_SYM, linha, coluna);
-        } else if(c== '=') {
-            if(hasNext() && peek() == '=') {
-                advance();
-                lexema.append('=');
-                return new Token(lexema.toString(), TokenType.EQ_SYM, linha, coluna);
-            }
-            return new Token(lexema.toString(), TokenType.ATRIB, linha, coluna);
+        char proxC = peek();
+        StringBuilder opInteiro = new StringBuilder();
+        opInteiro.append(c);
+
+        if(isOp(proxC)) {
+            opInteiro.append(proxC);
+            advance();
         }
-        return null;
+
+        TokenType tipo = operadores.get(opInteiro.toString());
+        if(tipo != null) {
+            return new Token(opInteiro.toString(), tipo, linha, coluna);
+        } else {
+            return null; // nao devia acontecer...
+        }
+
     }
 
     // ai aqui tem q olhar pro proximo pra saber se continua ou nao
@@ -89,7 +127,6 @@ public class LexScanner {
     }
 
     private Token analisarLiteral() {
-
         int inicioL = linha;
         int inicioC = coluna;
         boolean ehFloat = false;
@@ -163,7 +200,6 @@ public class LexScanner {
         return ' ';
     }
 
-
     private void skipWhitespaceAndComments() {
         while(peek() == ' ' || peek() == '\n') {
             advance();
@@ -178,6 +214,7 @@ public class LexScanner {
             }
         }
     }
+
 
     public Token nextToken() {
         try {
@@ -199,7 +236,7 @@ public class LexScanner {
             else if(Character.isDigit(peek())) {
                 encontrado = analisarLiteral();
             }
-            else if(peek() == '+' || peek() == '-' || peek() == '*' || peek() == '/' || peek() == '=') {
+            else if(isOp(peek())) {
                 encontrado = analisarOp();
             }
             else {
@@ -244,7 +281,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("string txt = \"hello world\"; \n @comentario \n int a = 12; \n printf(txt);");
+        LexScanner sc = new LexScanner("string txt = \"hello world\"; \n @comentario \n int a += 12; \n printf(txt);");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
