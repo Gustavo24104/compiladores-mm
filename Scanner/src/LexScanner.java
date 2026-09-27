@@ -103,27 +103,38 @@ public class LexScanner {
         }
 
         advance();
+        
+        try{
+            
+            while(hasNext()) {
+                char c = advance();
+                lexema.append(c);
 
-        while(hasNext()) {
-            char c = advance();
-            lexema.append(c);
+                if (c == '\\' && hasNext()) {
+                    char prox = lookAhead();
+                    lexema.append(prox);
+                    advance();
+                }
 
-            if (c == '"') {
-                return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
+                if (c == '"') {
+                    return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
+                }
+
+                try {
+                    if(c == '\n')       
+                } catch (Exception e) {
+                    System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
+                        linha++;
+                        coluna = 1;
+                        lexema.setLength(0);
+                }   
             }
-
-            if(c == '\n') {
-                // TODO: Transformar em exception
-                System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
-                linha++;
-                coluna = 1;
+            
+        } catch (Exception e) {
+                System.out.println("ERRO lexico. EOF, string nao encerrada");
                 lexema.setLength(0);
+                return null;
             }
-        }
-        // TODO: Transformar em exception
-        System.out.println("ERRO lexico. EOF, string nao encerrada");
-        lexema.setLength(0);
-        return null;
     }
 
     private Token analisarLiteral() {
