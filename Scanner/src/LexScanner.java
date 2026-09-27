@@ -108,19 +108,23 @@ public class LexScanner {
             
             while(hasNext()) {
                 char c = advance();
-                lexema.append(c);
 
                 if (c == '\\' && hasNext()) {
-                    char prox = lookAhead();
+                    char prox = advance();
+
+                    if(prox == ' ') {
+                        System.out.println("Erro: caractere de escape vazio na linha " + linha + ", coluna " + coluna);
+                    }
+
                     lexema.append(prox);
-                    advance();
+                } else {
+                    lexema.append(c);
                 }
 
                 if (c == '"') {
                     return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
                 }
 
-            
                 if(c == '\n') {
                     linha++;
                     coluna = 1;
@@ -134,6 +138,7 @@ public class LexScanner {
                 lexema.setLength(0);
                 return null;
             }
+        return null;
     }
 
     private Token analisarLiteral() {
@@ -291,7 +296,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("string txt = \"hello world\"; \n @comentario \n int a += 12; \n printf(txt);");
+        LexScanner sc = new LexScanner("string txt = \"hello \\\\ world\";");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
