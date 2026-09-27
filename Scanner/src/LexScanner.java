@@ -128,8 +128,6 @@ public class LexScanner {
                 if(c == '\n') {
                     linha++;
                     coluna = 1;
-                    lexema.setLength(0);
-                    System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
                 }    
             }
             
