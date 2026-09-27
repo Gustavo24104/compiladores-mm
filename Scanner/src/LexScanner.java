@@ -120,14 +120,13 @@ public class LexScanner {
                     return new Token(lexema.toString(), TokenType.STRING_LIT, inicioL, inicioC);
                 }
 
-                try {
-                    if(c == '\n')       
-                } catch (Exception e) {
+            
+                if(c == '\n') {
+                    linha++;
+                    coluna = 1;
+                    lexema.setLength(0);
                     System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
-                        linha++;
-                        coluna = 1;
-                        lexema.setLength(0);
-                }   
+                }    
             }
             
         } catch (Exception e) {
