@@ -128,7 +128,7 @@ public class LexScanner {
                 if(c == '\n') {
                     linha++;
                     coluna = 1;
-                    System.out.println("Quebra de linha detectada! String nao encerrada na linha" + inicioL + "e coluna" + inicioC);
+                    System.out.println("Quebra de linha detectada em " + inicioL + " e coluna " + inicioC + "; conteudo lido preservado");
                 }    
             }
             
