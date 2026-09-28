@@ -152,10 +152,18 @@ public class LexScanner {
                 lexema.append(c);
                 advance();
             } else if ((c == '.') && (!ehFloat)) {
-                if(Character.isDigit(lookAhead())) {
-                    ehFloat = true;
-                    lexema.append(c);
-                    advance();
+
+                try {
+                    if (Character.isDigit(lookAhead())) {
+                        ehFloat = true;
+                        lexema.append(c);
+                        advance();
+                    } else {
+                        break;
+                    }
+                    // entao acabou o arquivo
+                } catch (Exception _) {
+                    break;
                 }
             } else {
                 break;
@@ -295,7 +303,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("string txt = \"hello \\\\ world\";");
+        LexScanner sc = new LexScanner("12.");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
