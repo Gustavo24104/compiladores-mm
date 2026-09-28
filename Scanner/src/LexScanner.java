@@ -109,14 +109,25 @@ public class LexScanner {
             while(hasNext()) {
                 char c = advance();
 
+                // sequencia de escape
                 if (c == '\\' && hasNext()) {
                     char prox = advance();
-
+                    String append = Character.toString(prox);
                     if(prox == ' ') {
                         System.out.println("Erro: caractere de escape vazio na linha " + linha + ", coluna " + coluna);
                     }
 
-                    lexema.append(prox);
+                    // \t
+                    if(prox == 't') {
+                        append = "    ";
+                    }
+
+                    // \n
+                    if(prox == 'n') {
+                        append = "\n";
+                    }
+
+                    lexema.append(append);
                 } else {
                     lexema.append(c);
                 }
@@ -348,7 +359,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("int a = 12");
+        LexScanner sc = new LexScanner(" \" Hello \\\t world!\" ");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
