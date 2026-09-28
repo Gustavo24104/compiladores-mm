@@ -140,7 +140,7 @@ public class LexScanner {
         return null;
     }
 
-    private Token analisarLiteral() {
+    private Token analisarLiteralNumerico() {
         int inicioL = linha;
         int inicioC = coluna;
         boolean ehFloat = false;
@@ -256,7 +256,7 @@ public class LexScanner {
                 encontrado = analisarString();
             }
             else if(Character.isDigit(peek())) {
-                encontrado = analisarLiteral();
+                encontrado = analisarLiteralNumerico();
             }
             else if(isOp(peek())) {
                 encontrado = analisarOp();
@@ -303,7 +303,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("12.");
+        LexScanner sc = new LexScanner("true");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
