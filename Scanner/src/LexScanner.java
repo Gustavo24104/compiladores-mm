@@ -359,7 +359,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner(" \" Hello \\\t world!\" ");
+        LexScanner sc = new LexScanner(" \" Hello ");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
