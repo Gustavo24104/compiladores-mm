@@ -296,7 +296,7 @@ public class LexScanner {
             }
             // pro '-' precisa ver se faz parte do numero ou se eh operador...
             else if(isOp(peek())) {
-                if(peek() == '-' && Character.isDigit(lookAhead())) {
+                if(peek() == '-' && posAtual + 1 < input.length() && Character.isDigit(lookAhead())) {
                     encontrado = analisarLiteralNumerico();
                 } else {
                     encontrado = analisarOp();
@@ -347,7 +347,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("int a = -12");
+        LexScanner sc = new LexScanner("-12");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
