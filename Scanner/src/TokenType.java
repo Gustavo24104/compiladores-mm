@@ -4,6 +4,7 @@ public enum TokenType {
     INT_LIT,
     FLOAT_LIT,
     STRING_LIT,
+    BOOL_LIT,
 
     // operadores
     EQ_SYM, //             ==

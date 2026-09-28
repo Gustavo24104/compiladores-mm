@@ -214,7 +214,43 @@ public class LexScanner {
         lexema.setLength(0);
         return out;
     }
-    
+
+    // note que aqui tambem pode retornar id ou keyword....
+    private Token analisarLiteralBooleano() {
+        char cAtual;
+        while(hasNext()) {
+            if (posAtual + 1 < input.length()) {
+                char proxC = lookAhead();
+                if (proxC == '+' || proxC == '-' ||
+                        proxC == '*' || proxC == '/' || proxC == '=' || proxC == ' ' || proxC == ';' ||
+                        (palavrasReservadas.get(Character.toString(proxC)) != null)) {
+                    advance();
+                    break;
+                } else {
+                    cAtual = proxC;
+                    advance();
+                    lexema.append(cAtual);
+                }
+            } else {
+                advance();
+            }
+        }
+
+        String str = lexema.toString();
+        if(str.equals("true") || str.equals("false")) {
+            return new Token(str, TokenType.BOOL_LIT, linha, coluna);
+        } else {
+            TokenType tokenEncontrado = palavrasReservadas.get(lexema.toString());
+            Token out;
+            if(tokenEncontrado == null) {
+                out = new Token(lexema.toString(), TokenType.ID, linha, coluna);
+            } else {
+                out = new Token(lexema.toString(), tokenEncontrado, linha, coluna);
+            }
+            return out;
+        }
+    }
+
     private char peek() {
         if(hasNext()) {
             return input.charAt(posAtual);
@@ -261,6 +297,9 @@ public class LexScanner {
             else if(isOp(peek())) {
                 encontrado = analisarOp();
             }
+            else if(peek() == 't' || peek() == 'f') {
+                encontrado = analisarLiteralBooleano();
+            }
             else {
                 encontrado = analisarIdentificadorOuKeyword();
             }
@@ -303,7 +342,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("true");
+        LexScanner sc = new LexScanner("if (true==false)");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
