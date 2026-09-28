@@ -72,8 +72,8 @@ public class LexScanner {
 
     // cada função aqui funciona como um dos estados
 
-
     private Token analisarOp() {
+        int inioC = coluna;
         char c = advance();
         char proxC = peek();
         StringBuilder opInteiro = new StringBuilder();
@@ -86,7 +86,7 @@ public class LexScanner {
 
         TokenType tipo = operadores.get(opInteiro.toString());
         if(tipo != null) {
-            return new Token(opInteiro.toString(), tipo, linha, coluna);
+            return new Token(opInteiro.toString(), tipo, linha, inioC);
         } else {
             return null; // nao devia acontecer...
         }
@@ -127,7 +127,7 @@ public class LexScanner {
 
                 if(c == '\n') {
                     linha++;
-                    coluna = 1;
+                    coluna = 0;
                     System.out.println("Quebra de linha detectada em " + inicioL + " e coluna " + inicioC + "; conteudo lido preservado");
                 }    
             }
@@ -169,7 +169,6 @@ public class LexScanner {
                 break;
             }
         }
-//        coluna = posAtual;
         if(ehFloat) {
             return new Token(lexema.toString(), TokenType.FLOAT_LIT, inicioL, inicioC);
         } else {
@@ -180,9 +179,10 @@ public class LexScanner {
     // ai aqui usa um hash de palavras chaves
     private Token analisarIdentificadorOuKeyword() {
         char cAtual;
+        int inicioC = coluna;
         // identificadores de 1 letra
         if(palavrasReservadas.get(Character.toString(peek())) != null) {
-            return new Token(lexema.toString(), palavrasReservadas.get(Character.toString(advance())), linha, coluna);
+            return new Token(lexema.toString(), palavrasReservadas.get(Character.toString(advance())), linha, inicioC);
         }
 
         while(hasNext()) {
@@ -207,9 +207,9 @@ public class LexScanner {
         Token out;
 
         if(tokenEncontrado == null) {
-            out = new Token(lexema.toString(), TokenType.ID, linha, coluna);
+            out = new Token(lexema.toString(), TokenType.ID, linha, inicioC);
         } else {
-            out = new Token(lexema.toString(), tokenEncontrado, linha, coluna);
+            out = new Token(lexema.toString(), tokenEncontrado, linha, inicioC);
         }
         lexema.setLength(0);
         return out;
@@ -218,6 +218,7 @@ public class LexScanner {
     // note que aqui tambem pode retornar id ou keyword....
     private Token analisarLiteralBooleano() {
         char cAtual;
+        int inicioC = coluna;
         while(hasNext()) {
             if (posAtual + 1 < input.length()) {
                 char proxC = lookAhead();
@@ -238,14 +239,14 @@ public class LexScanner {
 
         String str = lexema.toString();
         if(str.equals("true") || str.equals("false")) {
-            return new Token(str, TokenType.BOOL_LIT, linha, coluna);
+            return new Token(str, TokenType.BOOL_LIT, linha, inicioC);
         } else {
             TokenType tokenEncontrado = palavrasReservadas.get(lexema.toString());
             Token out;
             if(tokenEncontrado == null) {
-                out = new Token(lexema.toString(), TokenType.ID, linha, coluna);
+                out = new Token(lexema.toString(), TokenType.ID, linha, inicioC);
             } else {
-                out = new Token(lexema.toString(), tokenEncontrado, linha, coluna);
+                out = new Token(lexema.toString(), tokenEncontrado, linha, inicioC);
             }
             return out;
         }
@@ -347,7 +348,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("-12");
+        LexScanner sc = new LexScanner("int a = 12");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
