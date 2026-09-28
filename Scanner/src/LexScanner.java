@@ -294,8 +294,13 @@ public class LexScanner {
             else if(Character.isDigit(peek())) {
                 encontrado = analisarLiteralNumerico();
             }
+            // pro '-' precisa ver se faz parte do numero ou se eh operador...
             else if(isOp(peek())) {
-                encontrado = analisarOp();
+                if(peek() == '-' && Character.isDigit(lookAhead())) {
+                    encontrado = analisarLiteralNumerico();
+                } else {
+                    encontrado = analisarOp();
+                }
             }
             else if(peek() == 't' || peek() == 'f') {
                 encontrado = analisarLiteralBooleano();
@@ -342,7 +347,7 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner("if (true==false)");
+        LexScanner sc = new LexScanner("int a = -12");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {
