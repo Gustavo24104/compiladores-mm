@@ -1,3 +1,4 @@
+package Scanner;
 
 public class Token {
     public String lexema;

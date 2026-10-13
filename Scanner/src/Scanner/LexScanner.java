@@ -1,3 +1,9 @@
+// Alunos:
+// Gustavo Henrique Leal da Fosenca - 12321BCC001
+// Osvaldo Pagliolli de Lollo da Silva - 12321BCC047
+package Scanner;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -359,7 +365,18 @@ public class LexScanner {
     }
 
     static void main() {
-        LexScanner sc = new LexScanner(" \" Hello ");
+
+
+        LexScanner sc = new LexScanner(" void main() {\n" +
+                "a: int = 13;\n" +
+                "float b = 3.14;\n" +
+                "string str = \"hello world!\";\n" +
+                "print(str);\n" +
+                "\n" +
+                "if (a > 17) {\n" +
+                "    b *= 2;\n" +
+                "   }\n" +
+                "}");
         var resultados = new ArrayList<Token>();
 
         while(sc.hasNext()) {

@@ -1,3 +1,6 @@
+import Scanner.LexScanner;
+import Scanner.Token;
+import Scanner.TokenType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
