@@ -74,6 +74,54 @@ public class ParserLL1 {
         }
     }
 
+    void parse$() {
+        if(lookAhead.tokenType == TokenType.INT_KEYWORD ||
+                lookAhead.tokenType == TokenType.FLOAT_KEYWORD ||
+                lookAhead.tokenType == TokenType.BOOL_KEYWORD ||
+                lookAhead.tokenType == TokenType.STRING_KEYWORD ||
+                lookAhead.tokenType == TokenType.VOID_KEYWORD){ // first de <decl_primaria>
+            parseDeclPrim();
+            match(TokenType.EOF);
+        } else {
+            error("Esperado especificador de tipo");
+        }
+    }
+
+    void parseAtribuicao() {
+        if(lookAhead.tokenType == TokenType.ID) {
+            parseIdentificador();
+            parseAtribuicaoPrime();
+        } else {
+            error("identificador");
+        }
+    }
+
+    void parseAtribuicaoPrime() {
+        if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
+            match(TokenType.ATRIB_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.PLUS_EQ_SYM) {
+            match(TokenType.PLUS_EQ_SYM);
+            parseExpression();
+
+        } else if (lookAhead.tokenType == TokenType.MINUS_EQ_SYM) {
+            match(TokenType.MINUS_EQ_SYM);
+            parseExpression();
+
+        } else if(lookAhead.tokenType == TokenType.MULT_EQ_SYM) {
+            match(TokenType.MULT_EQ_SYM);
+            parseExpression();
+
+        } else if(lookAhead.tokenType == TokenType.DIV_EQ_SYM) {
+            match(TokenType.DIV_EQ_SYM);
+            parseExpression();
+
+        } else {
+            error("operacao de atribuicao");
+            sync();
+        }
+    }
+
     void parseEspecificador_Tipo() {
         if(lookAhead.tokenType == TokenType.INT_KEYWORD) {
             match(TokenType.INT_KEYWORD);
@@ -156,7 +204,6 @@ public class ParserLL1 {
 
     }
     void parseInicial(){}
-    void parseAtribuicao(){}
     void parseExpMat(){}
     void parseDeclLaco(){}
     void parseExpression(){}
