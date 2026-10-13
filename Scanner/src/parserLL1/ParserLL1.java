@@ -96,6 +96,55 @@ public class ParserLL1 {
 
     }
 
+    void parseExpComp(){
+        parseExpression();
+        parseExpCompPrime();
+    }
+
+    void parseExpCompPrime() {
+        if(lookAhead.tokenType == TokenType.EQ_SYM) {
+            match(TokenType.EQ_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.GEQ_SYM){
+            match(TokenType.GEQ_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.LEQ_SYM){
+            match(TokenType.LEQ_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.DIFF_SYM){
+            match(TokenType.DIFF_SYM);
+            parseExpression();
+        } else {
+            error("expressao de comparação");
+        }
+    }
+
+    void parseExpLogico(){
+        if(lookAhead.tokenType == TokenType.LOGICAL_NOT_SYM) {
+            match(TokenType.LOGICAL_NOT_SYM);
+            parseExpression();
+        } else {
+            parseExpression();
+            parseExpLogicoPrime();
+        }
+    }
+
+    void parseExpLogicoPrime(){
+        if(lookAhead.tokenType == TokenType.BITWISE_XOR_SYM) {
+            match(TokenType.BITWISE_XOR_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.BITWISE_OR_SYM){
+            match(TokenType.BITWISE_OR_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.BITWSISE_AND_SYM){
+            match(TokenType.BITWSISE_AND_SYM);
+            parseExpression();
+        } else {
+            error("expressao de operação bit a bit");
+        }
+    }
+
+
     void parseCond_aberta() {
 
     }
@@ -103,18 +152,14 @@ public class ParserLL1 {
     void parseCond_fechada() {
 
     }
-
     void parseDecl_condicional() {
 
     }
-
     void parseInicial(){}
     void parseAtribuicao(){}
-    void parseExpComp(){}
-    void parseExpLogico(){}
     void parseExpMat(){}
     void parseDeclLaco(){}
-    void parseExpr(){}
+    void parseExpression(){}
     void parseLsParam(){}
     void parseLsExpr(){}
     void parseDeclID(){}
