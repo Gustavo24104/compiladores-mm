@@ -117,6 +117,7 @@ public class ParserLL1 {
     void parseExpr(){}
     void parseLsParam(){}
     void parseLsExpr(){}
+    void parseDeclID(){}
     void parseDeclPrim(){}
     void parseDeclBloco(){}
     void parseDeclRetorno(){}
