@@ -108,4 +108,17 @@ public class ParserLL1 {
 
     }
 
+    void parseInicial(){}
+    void parseAtribuicao(){}
+    void parseExpComp(){}
+    void parseExpLogico(){}
+    void parseExpMat(){}
+    void parseDeclLaco(){}
+    void parseExpr(){}
+    void parseLsParam(){}
+    void parseLsExpr(){}
+    void parseDeclPrim(){}
+    void parseDeclBloco(){}
+    void parseDeclRetorno(){}
+
 }
