@@ -9,10 +9,10 @@ public class ParserLL1Test {
     @Test
     void testProgramaValidoTiposEAtribuicoes() {
         String codigo = "void main() {\n" +
-                        "    int a = 10;\n" +
+                        "    int a = 13;\n" +
                         "    float b = 3.14;\n" +
-                        "    bool ativo = true;\n" +
-                        "    string texto = \"compiladores\";\n" +
+                        "    string str = \"hello world!\";\n" +
+                        "    a = 25;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -23,12 +23,14 @@ public class ParserLL1Test {
     @Test
     void testProgramaValidoControleFluxo() {
         String codigo = "void processar() {\n" +
-                        "    int i = 0;\n" +
-                        "    while (i < 5) {\n" +
-                        "        i = i + 1;\n" +
+                        "    int a = 10;\n" +
+                        "    if (a > 5) {\n" +
+                        "        a *= 2;\n" +
+                        "    } else {\n" +
+                        "        a -= 1;\n" +
                         "    }\n" +
-                        "    for (int j = 0; j < 5; j = j + 1) {\n" +
-                        "        int x = j;\n" +
+                        "    while (a > 0) {\n" +
+                        "        a = a - 1;\n" +
                         "    }\n" +
                         "}";
         assertDoesNotThrow(() -> {
@@ -39,11 +41,11 @@ public class ParserLL1Test {
 
     @Test
     void testProgramaValidoFuncoesEProcedimentos() {
-        String codigo = "void executar() {\n" +
-                        "    return;\n" +
+        String codigo = "int somar(int x, int y) {\n" +
+                        "    return x + y;\n" +
                         "}\n" +
                         "void main() {\n" +
-                        "    executar();\n" +
+                        "    int resultado = somar(10, 20);\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -74,9 +76,11 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoParenteseInvalidoEmExpressao() {
+    void testProgramaInvalidoParenteseAusenteCondicao() {
         String codigo = "void main() {\n" +
-                        "    int a = (5 + 3;\n" +
+                        "    if a > 5 {\n" +
+                        "        int b = 1;\n" +
+                        "    }\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -87,9 +91,9 @@ public class ParserLL1Test {
     @Test
     void testProgramaComMultiplosErrosModoPanico() {
         String codigo = "void main() {\n" +
-                        "    int a = ;\n" +
-                        "    float b = 3.14;\n" +
-                        "    int c = (2 + ;\n" +
+                        "    int a = 10\n" +
+                        "    int = 5;\n" +
+                        "    float b = 3.14\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
