@@ -573,6 +573,7 @@ public class ParserLL1 {
     void parseDeclRetornoPrime() {
         if(firstExp_unaria(lookAhead.tokenType)) {
             parseExpression();
+            match(TokenType.PONTO_E_VIRGULA);
         } else if(lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
             match(TokenType.PONTO_E_VIRGULA);
         } else {
@@ -582,15 +583,9 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = " void main() {\n" +
-                "int a = 13;\n" +
-                "float b = 3.14;\n" +
-                "string str = \"hello world!\";\n" +
-                "outra(abd);" +
-                "\n" +
-                "if (a > 17) {\n" +
-                "    b *= 2;\n" +
-                "   }\n" +
+        String input =
+                "int soma(int a, int b) {" +
+                "    return a + b;" +
                 "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
