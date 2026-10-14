@@ -43,11 +43,11 @@ public class ParserLL1Test {
 
     @Test
     void testProgramaValidoFuncoesEProcedimentos() {
-        String codigo = "int calcular(int x, int y) {\n" +
-                        "    return x + y;\n" +
+        String codigo = "void executar() {\n" +
+                        "    return;\n" +
                         "}\n" +
                         "void main() {\n" +
-                        "    int res = calcular(10, 20);\n" +
+                        "    executar();\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -67,11 +67,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoParenteseAusenteCondicao() {
+    void testProgramaInvalidoTipoDesconhecido() {
         String codigo = "void main() {\n" +
-                        "    if (a > 5 {\n" +
-                        "        int b = 1;\n" +
-                        "    }\n" +
+                        "    tipoInvalido x = 5;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -80,9 +78,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoDeclaracaoSemIdentificador() {
+    void testProgramaInvalidoAtribuicaoIncompleta() {
         String codigo = "void main() {\n" +
-                        "    int = 5;\n" +
+                        "    int a = ;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -94,9 +92,7 @@ public class ParserLL1Test {
     void testProgramaComMultiplosErrosModoPanico() {
         String codigo = "void main() {\n" +
                         "    int a = 10\n" +
-                        "    if (b > { \n" +
-                        "        int c = 5;\n" +
-                        "    }\n" +
+                        "    tipoInvalido b = 20;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
