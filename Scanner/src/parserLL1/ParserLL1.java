@@ -418,9 +418,6 @@ public class ParserLL1 {
         } else {
             error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
             sync();
-            if (lookAhead.tokenType != TokenType.EOF && lookAhead.tokenType != TokenType.FECHA_CHAVES) {
-                parseDeclaracao();
-            }
         }
     }
 
@@ -583,9 +580,14 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input =
-                "int soma(int a, int b) {" +
-                "    return a + b;" +
+        String input = "void processar() {\n" +
+                "    bool i = 0;\n" +
+                "    while (i < 5) {\n" +
+                "        i = i + 1;\n" +
+                "    }\n" +
+                "    for (int j = 0; j < 5; j = j + 1;) {\n" +
+                "        int x = j;\n" +
+                "    }\n" +
                 "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();

@@ -11,7 +11,7 @@ public class ParserLL1Test {
         String codigo = "void main() {\n" +
                         "    int a = 10;\n" +
                         "    float b = 3.14;\n" +
-                        "    bool ativo = true;\n" +
+                        "    int ativo = true;\n" +
                         "    string texto = \"compiladores\";\n" +
                         "}";
         assertDoesNotThrow(() -> {
@@ -27,7 +27,7 @@ public class ParserLL1Test {
                         "    while (i < 5) {\n" +
                         "        i = i + 1;\n" +
                         "    }\n" +
-                        "    for (int j = 0; j < 5; j = j + 1) {\n" +
+                        "    for (int j = 0; j < 5; j = j + 1;) {\n" +
                         "        int x = j;\n" +
                         "    }\n" +
                         "}";

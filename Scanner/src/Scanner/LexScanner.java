@@ -25,6 +25,7 @@ public class LexScanner {
         palavrasReservadas.put("int", TokenType.INT_KEYWORD);
         palavrasReservadas.put("float", TokenType.FLOAT_KEYWORD);
         palavrasReservadas.put("string", TokenType.STRING_KEYWORD);
+        palavrasReservadas.put("bool", TokenType.BOOL_KEYWORD);
         palavrasReservadas.put("return", TokenType.RETURN_KEYWORD);
         palavrasReservadas.put("void", TokenType.VOID_KEYWORD);
         palavrasReservadas.put("(", TokenType.ABRE_PARENTESES);
@@ -369,7 +370,7 @@ public class LexScanner {
 
         LexScanner sc = new LexScanner(" void main() {\n" +
                 "a: int = 13;\n" +
-                "float b = 3.14;\n" +
+                "bool b = 3.14;\n" +
                 "string str = \"hello world!\";\n" +
                 "print(str);\n" +
                 "\n" +
