@@ -193,22 +193,12 @@ public class ParserLL1 {
     }
 
     void parseExpression(){
-        if(firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_or();
-        } else {
-            error("expressao");
-            sync();
-        }
+        parseExp_or();
     }
 
     void parseExp_or() {
-        if(firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_and();
-            parseExp_orPrime();
-        } else {
-        error("expressao");
-        sync();
-    }
+        parseExp_and();
+        parseExp_orPrime();
     }
 
     void parseExp_orPrime(){
@@ -222,27 +212,23 @@ public class ParserLL1 {
     }
 
     void parseExp_and(){
-        if(firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_bitor();
-            parseExp_andPrime();
-        }
+        parseExp_bitor();
+        parseExp_andPrime();
     }
 
     void parseExp_andPrime() {
         if(lookAhead.tokenType == TokenType.LOGICAL_AND_SYM) {
             match(TokenType.LOGICAL_AND_SYM);
             parseExp_bitor();
-            parseExp_orPrime();
+            parseExp_andPrime();
         } else { // prod vazia
             return;
         }
     }
 
     void parseExp_bitor() {
-        if(firstExp_unaria(lookAhead.tokenType)) {
             parseExp_bitXor();
             parseExp_bitorPrime();
-        }
     }
 
     void parseExp_bitorPrime() {
@@ -256,10 +242,8 @@ public class ParserLL1 {
     }
 
     void parseExp_bitXor() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_bitAnd();
-            parseExp_bitXorPrime();
-        }
+        parseExp_bitAnd();
+        parseExp_bitXorPrime();
     }
 
     void parseExp_bitXorPrime() {
@@ -273,10 +257,8 @@ public class ParserLL1 {
     }
 
     void parseExp_bitAnd() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_igualdade();
-            parseExp_bitAndPrime();
-        }
+        parseExp_igualdade();
+        parseExp_bitAndPrime();
     }
 
     void parseExp_bitAndPrime() {
@@ -290,10 +272,8 @@ public class ParserLL1 {
     }
 
     void parseExp_igualdade() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_rel();
-            parseExp_igualdadePrime();
-        }
+        parseExp_rel();
+        parseExp_igualdadePrime();
     }
 
     void parseExp_igualdadePrime() {
@@ -312,10 +292,8 @@ public class ParserLL1 {
     }
 
     void parseExp_rel() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
-            parseExp_Add();
-            parseExp_relPrime();
-        }
+        parseExp_Add();
+        parseExp_relPrime();
     }
 
     void parseExp_relPrime() {
@@ -327,6 +305,14 @@ public class ParserLL1 {
             match(TokenType.LEQ_SYM);
             parseExp_Add();
             parseExp_relPrime();
+        } else if (lookAhead.tokenType == TokenType.LESS_SYM) {
+            match(TokenType.LESS_SYM);
+            parseExp_Add();
+            parseExp_relPrime();
+        } else if (lookAhead.tokenType == TokenType.GREAT_SYM) {
+            match(TokenType.GREAT_SYM);
+            parseExp_Add();
+            parseExp_relPrime();
         }
         else { // prod vazia
             return;
@@ -334,10 +320,8 @@ public class ParserLL1 {
     }
 
     void parseExp_Add() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
             parseExp_mult();
             parseExp_AddPrime();
-        }
     }
 
     void parseExp_AddPrime() {
@@ -356,10 +340,8 @@ public class ParserLL1 {
     }
 
     void parseExp_mult() {
-        if (firstExp_unaria(lookAhead.tokenType)) {
             parseExp_Unaria();
             parseExp_multPrime();
-        }
     }
 
     void parseExp_multPrime() {
@@ -383,6 +365,9 @@ public class ParserLL1 {
             parseExp_Unaria();
         } else if (firstPrimaria(lookAhead.tokenType)) {
             parsePrimaria();
+        } else {
+            error("expressao mal formada");
+            sync();
         }
     }
 
@@ -395,6 +380,9 @@ public class ParserLL1 {
             parseIdentificador();
         } else if(firstConstante(lookAhead.tokenType)) {
             parseConstante();
+        } else {
+            error("expressao mal formada");
+            sync();
         }
     }
 
