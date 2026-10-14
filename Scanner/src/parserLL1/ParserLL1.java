@@ -74,10 +74,18 @@ public class ParserLL1 {
                 tt == TokenType.BOOL_LIT;
     }
 
-    boolean firstExp_logicoPrime(TokenType tt) {
-        return tt == TokenType.BITWISE_XOR_SYM ||
-                tt == TokenType.BITWISE_OR_SYM ||
-                tt == TokenType.BITWSISE_AND_SYM;
+
+    boolean firstExp_unaria(TokenType tt) {
+        return tt == TokenType.LOGICAL_NOT_SYM ||
+                tt == TokenType.ABRE_PARENTESES ||
+                tt == TokenType.ID ||
+                firstConstante(tt);
+    }
+
+    boolean firstPrimaria(TokenType tt) {
+        return tt == TokenType.ABRE_PARENTESES ||
+                tt == TokenType.ID ||
+                firstConstante(tt);
     }
 
     // métodos de parsing...
@@ -184,88 +192,209 @@ public class ParserLL1 {
         }
     }
 
-    void parseExpComp(){
-        if(firstExpression(lookAhead.tokenType)) {
-            parseExpression();
-            parseExpCompPrime();
+    void parseExpression(){
+        if(firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_or();
         } else {
-            error("expressao de comparacao");
+            error("expressao");
             sync();
         }
     }
 
-    void parseExpCompPrime() {
-        if(lookAhead.tokenType == TokenType.EQ_SYM) {
-            match(TokenType.EQ_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.GEQ_SYM){
-            match(TokenType.GEQ_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.LEQ_SYM){
-            match(TokenType.LEQ_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.DIFF_SYM){
-            match(TokenType.DIFF_SYM);
-            parseExpression();
+    void parseExp_or() {
+        if(firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_and();
+            parseExp_orPrime();
         } else {
-            error("expressao de comparação");
+        error("expressao");
+        sync();
+    }
+    }
+
+    void parseExp_orPrime(){
+        if(lookAhead.tokenType == TokenType.LOGICAL_OR_SYM) {
+            match(TokenType.LOGICAL_OR_SYM);
+            parseExp_and();
+            parseExp_orPrime();
+        } else { // prod vazia
+            return;
         }
     }
 
-
-    void parseExpLogico(){
-        if(lookAhead.tokenType == TokenType.LOGICAL_NOT_SYM) {
-            match(TokenType.LOGICAL_NOT_SYM);
-            parseExpression();
-        } else if (firstExpression(lookAhead.tokenType)){
-            parseExpression();
-            parseExpLogicoPrime();
-        } else {
-            error("expressão lógica");
-            sync();
+    void parseExp_and(){
+        if(firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_bitor();
+            parseExp_andPrime();
         }
     }
 
-    void parseExpLogicoPrime(){
+    void parseExp_andPrime() {
+        if(lookAhead.tokenType == TokenType.LOGICAL_AND_SYM) {
+            match(TokenType.LOGICAL_AND_SYM);
+            parseExp_bitor();
+            parseExp_orPrime();
+        } else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_bitor() {
+        if(firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_bitXor();
+            parseExp_bitorPrime();
+        }
+    }
+
+    void parseExp_bitorPrime() {
+        if(lookAhead.tokenType == TokenType.BITWISE_OR_SYM) {
+            match(TokenType.BITWISE_OR_SYM);
+            parseExp_bitXor();
+            parseExp_bitorPrime();
+        } else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_bitXor() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_bitAnd();
+            parseExp_bitXorPrime();
+        }
+    }
+
+    void parseExp_bitXorPrime() {
         if(lookAhead.tokenType == TokenType.BITWISE_XOR_SYM) {
             match(TokenType.BITWISE_XOR_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.BITWISE_OR_SYM){
-            match(TokenType.BITWISE_OR_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.BITWSISE_AND_SYM){
+            parseExp_bitAnd();
+            parseExp_bitXorPrime();
+        } else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_bitAnd() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_igualdade();
+            parseExp_bitAndPrime();
+        }
+    }
+
+    void parseExp_bitAndPrime() {
+        if(lookAhead.tokenType == TokenType.BITWSISE_AND_SYM) {
             match(TokenType.BITWSISE_AND_SYM);
-            parseExpression();
-        } else {
-            error("expressao de operação bit a bit");
+            parseExp_igualdade();
+            parseExp_bitAndPrime();
+        } else { // prod vazia
+            return;
         }
     }
 
-    void parseExpMat(){
-        if(firstExpression(lookAhead.tokenType)) {
-            parseExpression();
-            parseExpMatPrime();
-        } else {
-            error("expressão matemática");
-            sync();
+    void parseExp_igualdade() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_rel();
+            parseExp_igualdadePrime();
         }
     }
 
-    void parseExpMatPrime() {
+    void parseExp_igualdadePrime() {
+        if(lookAhead.tokenType == TokenType.EQ_SYM) {
+            match(TokenType.EQ_SYM);
+            parseExp_rel();
+            parseExp_igualdadePrime();
+        } else if (lookAhead.tokenType == TokenType.DIFF_SYM) {
+            match(TokenType.DIFF_SYM);
+            parseExp_rel();
+            parseExp_igualdadePrime();
+        }
+        else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_rel() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_Add();
+            parseExp_relPrime();
+        }
+    }
+
+    void parseExp_relPrime() {
+        if(lookAhead.tokenType == TokenType.GEQ_SYM) {
+            match(TokenType.GEQ_SYM);
+            parseExp_Add();
+            parseExp_relPrime();
+        } else if (lookAhead.tokenType == TokenType.LEQ_SYM) {
+            match(TokenType.LEQ_SYM);
+            parseExp_Add();
+            parseExp_relPrime();
+        }
+        else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_Add() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_mult();
+            parseExp_AddPrime();
+        }
+    }
+
+    void parseExp_AddPrime() {
         if(lookAhead.tokenType == TokenType.PLUS_SYM) {
             match(TokenType.PLUS_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.MINUS_SYM){
+            parseExp_mult();
+            parseExp_AddPrime();
+        } else if (lookAhead.tokenType == TokenType.MINUS_SYM) {
             match(TokenType.MINUS_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.MULT_SYM){
+            parseExp_mult();
+            parseExp_AddPrime();
+        }
+        else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_mult() {
+        if (firstExp_unaria(lookAhead.tokenType)) {
+            parseExp_Unaria();
+            parseExp_multPrime();
+        }
+    }
+
+    void parseExp_multPrime() {
+        if(lookAhead.tokenType == TokenType.MULT_SYM) {
             match(TokenType.MULT_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.DIV_SYM){
+            parseExp_Unaria();
+            parseExp_multPrime();
+        } else if (lookAhead.tokenType == TokenType.DIV_SYM) {
             match(TokenType.DIV_SYM);
+            parseExp_Unaria();
+            parseExp_multPrime();
+        }
+        else { // prod vazia
+            return;
+        }
+    }
+
+    void parseExp_Unaria() {
+        if(lookAhead.tokenType == TokenType.LOGICAL_NOT_SYM) {
+            match(TokenType.LOGICAL_NOT_SYM);
+            parseExp_Unaria();
+        } else if (firstPrimaria(lookAhead.tokenType)) {
+            parsePrimaria();
+        }
+    }
+
+    void parsePrimaria() {
+        if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
+            match(TokenType.ABRE_PARENTESES);
             parseExpression();
-        } else {
-            error("expressao matemática");
+            match(TokenType.FECHA_PARENTESES);
+        } else if(lookAhead.tokenType == TokenType.ID) {
+            parseIdentificador();
+        } else if(firstConstante(lookAhead.tokenType)) {
+            parseConstante();
         }
     }
 
@@ -323,29 +452,6 @@ public class ParserLL1 {
             error("declaracao de laco (for ou while)");
             sync();
         }
-    }
-
-    void parseExpression(){
-        if(lookAhead.tokenType == TokenType.ABRE_CHAVES) {
-            match(TokenType.ABRE_CHAVES);
-            parseExpression();
-            match(TokenType.FECHA_CHAVES);
-            parseExpressionPrime();
-        } else if (firstConstante(lookAhead.tokenType)) {
-            parseConstante();
-            parseExpressionPrime();
-        } else if (lookAhead.tokenType == TokenType.LOGICAL_NOT_SYM){
-            match(TokenType.LOGICAL_NOT_SYM);
-            parseExpression();
-        }
-        else if (lookAhead.tokenType == TokenType.ID) { // first <identificador:
-            parseIdentificador();
-            parseExpressionPrime();
-        }
-    }
-
-    void parseExpressionPrime() {
-
     }
 
     void parseDeclaracao() {
