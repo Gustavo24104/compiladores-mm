@@ -108,7 +108,7 @@ public class ParserLL1 {
     void parseIdentificadorPrime() {
         if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
             match(TokenType.ABRE_PARENTESES);
-            parseLsExpr();
+            parseLsExps();
             match(TokenType.FECHA_PARENTESES);
         } else { // prod vazia
             return;
@@ -123,7 +123,7 @@ public class ParserLL1 {
                 lookAhead.tokenType == TokenType.VOID_KEYWORD){ // first de <decl_primaria>
             parseDeclPrim();
             match(TokenType.EOF);
-            System.out.println("");
+            System.out.println("Parsing terminado!");
         } else {
             error("Esperado especificador de tipo");
             sync();
@@ -524,7 +524,7 @@ public class ParserLL1 {
     void parseDeclID(){
         if(firstEspecificacao_tipo(lookAhead.tokenType)) {
             parseEspecificador_Tipo();
-            parseIdentificador();
+            match(TokenType.ID);
             parseDeclIDPrime();
         } else {
             error("declaração de identificador");
@@ -593,7 +593,13 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = "int 12;";
+        String input = "int func(int a){" +
+                "while(abd){" +
+                "while(acd){" +
+                "" +
+                "int a;" +
+                "}" +
+                "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
     }
