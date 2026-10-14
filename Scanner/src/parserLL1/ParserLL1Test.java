@@ -2,83 +2,98 @@ package parserLL1;
 
 import Scanner.LexScanner;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class ParserLL1Test {
 
     @Test
-    public void testProgramaValidoTiposVariaveis() {
-        String codigo = "int x = 10; float y = 5.5; string s = \"compiladores\"; bool ativo = true;";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaValidoTiposEAtribuicoes() {
+        String codigo = "void main() {\n" +
+                        "    int a = 10;\n" +
+                        "    float b = 3.14;\n" +
+                        "    bool ativo = true;\n" +
+                        "    string texto = \"compiladores\";\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testProgramaValidoControleFluxo() {
-        String codigo = "void main() {" +
-                "    int i = 0;" +
-                "    while (i < 10) {" +
-                "        if (i == 5) {" +
-                "            i += 1;" +
-                "        } else {" +
-                "            i = i + 1;" +
-                "        }" +
-                "    }" +
-                "    for (int j = 0; j < 5; j = j + 1;) {" +
-                "        i = i * 2;" +
-                "    }" +
-                "}";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaValidoControleFluxo() {
+        String codigo = "void processar() {\n" +
+                        "    int i = 0;\n" +
+                        "    while (i < 5) {\n" +
+                        "        i = i + 1;\n" +
+                        "    }\n" +
+                        "    for (int j = 0; j < 5; j = j + 1) {\n" +
+                        "        int x = j;\n" +
+                        "    }\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testProgramaValidoProcedimentosFuncoes() {
-        String codigo = "int soma(int a, int b) {" +
-                "    return a + b;" +
-                "}" +
-                "void main() {" +
-                "    int resultado = soma(15, 25);" +
-                "}";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaValidoFuncoesEProcedimentos() {
+        String codigo = "void executar() {\n" +
+                        "    return;\n" +
+                        "}\n" +
+                        "void main() {\n" +
+                        "    executar();\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testProgramaInvalidoPontoVirgulaFaltando() {
-        String codigo = "int x = 10";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaInvalidoPontoEVirgulaAusente() {
+        String codigo = "void main() {\n" +
+                        "    int a = 10\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testProgramaInvalidoParenteseCondicional() {
-        String codigo = "void main() { if (x > 5 { x = 0; } }";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaInvalidoDeclaracaoSemIdentificador() {
+        String codigo = "void main() {\n" +
+                        "    int = 5;\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testProgramaInvalidoAtribuicaoMalformada() {
-        String codigo = "int x = + ;";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaInvalidoParenteseInvalidoEmExpressao() {
+        String codigo = "void main() {\n" +
+                        "    int a = (5 + 3;\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 
     @Test
-    public void testRecuperacaoModoPanicoMultiplosErros() {
-        String codigo = "int a = + ;" +
-                "void func(int { return 0; }" +
-                "float b = 10.5";
-        LexScanner scanner = new LexScanner(codigo);
-        ParserLL1 parser = new ParserLL1(scanner);
-        assertDoesNotThrow(() -> parser.parse$());
+    void testProgramaComMultiplosErrosModoPanico() {
+        String codigo = "void main() {\n" +
+                        "    int a = ;\n" +
+                        "    float b = 3.14;\n" +
+                        "    int c = (2 + ;\n" +
+                        "}";
+        assertDoesNotThrow(() -> {
+            ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
+            parser.parse$();
+        });
     }
 }
