@@ -147,43 +147,6 @@ public class ParserLL1 {
         }
     }
 
-    void parseAtribuicao() {
-        if(lookAhead.tokenType == TokenType.ID) {
-            parseIdentificador();
-            parseAtribuicaoPrime();
-            match(TokenType.PONTO_E_VIRGULA);
-        } else {
-            error("identificador");
-            sync();
-        }
-    }
-
-    void parseAtribuicaoPrime() {
-        if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
-            match(TokenType.ATRIB_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.PLUS_EQ_SYM) {
-            match(TokenType.PLUS_EQ_SYM);
-            parseExpression();
-
-        } else if (lookAhead.tokenType == TokenType.MINUS_EQ_SYM) {
-            match(TokenType.MINUS_EQ_SYM);
-            parseExpression();
-
-        } else if(lookAhead.tokenType == TokenType.MULT_EQ_SYM) {
-            match(TokenType.MULT_EQ_SYM);
-            parseExpression();
-
-        } else if(lookAhead.tokenType == TokenType.DIV_EQ_SYM) {
-            match(TokenType.DIV_EQ_SYM);
-            parseExpression();
-
-        } else {
-            error("operacao de atribuicao");
-            sync();
-        }
-    }
-
     void parseExpression(){
         parseExp_or();
     }
@@ -425,7 +388,7 @@ public class ParserLL1 {
             parseDeclID();
             parseExpression();
             match(TokenType.PONTO_E_VIRGULA);
-            parseAtribuicao();
+            parseComando_exp();
             match(TokenType.FECHA_PARENTESES);
             parseDeclBloco();
         } else {
@@ -441,8 +404,8 @@ public class ParserLL1 {
         } else if (lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
             parseDeclRetorno();
             parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.ID) {
-            parseAtribuicao();
+        } else if (firstExp_unaria(lookAhead.tokenType)) {
+            parseComando_exp();
             parseDeclaracao();
         } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) {
             parseDecl_condicional();
@@ -450,12 +413,7 @@ public class ParserLL1 {
         } else if (lookAhead.tokenType == TokenType.WHILE_KEYWORD || lookAhead.tokenType == TokenType.FOR_KEYWORD) {
             parseDeclLaco();
             parseDeclaracao();
-        } else if (firstExp_unaria(lookAhead.tokenType)){
-            parseExpression();
-            match(TokenType.PONTO_E_VIRGULA);
-            parseDeclaracao();
-        }
-        else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) { // prod vazia
+        } else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) { // prod vazia
             return;
         } else {
             error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
@@ -463,6 +421,37 @@ public class ParserLL1 {
             if (lookAhead.tokenType != TokenType.EOF && lookAhead.tokenType != TokenType.FECHA_CHAVES) {
                 parseDeclaracao();
             }
+        }
+    }
+
+    void parseComando_exp(){
+        parseExpression();
+        parseComando_expPrime();
+        match(TokenType.PONTO_E_VIRGULA);
+    }
+
+    void parseComando_expPrime() {
+        if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
+            match(TokenType.ATRIB_SYM);
+            parseExpression();
+        } else if (lookAhead.tokenType == TokenType.PLUS_EQ_SYM) {
+            match(TokenType.PLUS_EQ_SYM);
+            parseExpression();
+
+        } else if (lookAhead.tokenType == TokenType.MINUS_EQ_SYM) {
+            match(TokenType.MINUS_EQ_SYM);
+            parseExpression();
+
+        } else if(lookAhead.tokenType == TokenType.MULT_EQ_SYM) {
+            match(TokenType.MULT_EQ_SYM);
+            parseExpression();
+
+        } else if(lookAhead.tokenType == TokenType.DIV_EQ_SYM) {
+            match(TokenType.DIV_EQ_SYM);
+            parseExpression();
+
+        } else { // prod vazia
+            return;
         }
     }
 
@@ -593,12 +582,15 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = "int func(int a){" +
-                "while(abd){" +
-                "while(acd){" +
-                "" +
-                "int a;" +
-                "}" +
+        String input = " void main() {\n" +
+                "int a = 13;\n" +
+                "float b = 3.14;\n" +
+                "string str = \"hello world!\";\n" +
+                "outra(abd);" +
+                "\n" +
+                "if (a > 17) {\n" +
+                "    b *= 2;\n" +
+                "   }\n" +
                 "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
