@@ -349,7 +349,34 @@ public class ParserLL1 {
     }
 
     void parseDeclaracao() {
-
+        if (firstEspecificacao_tipo(lookAhead.tokenType)) {
+            parseDeclID();
+            parseDeclaracao();
+        } else if (lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
+            parseDeclRetorno();
+            parseDeclRetornoPrime();
+            if (lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
+                match(TokenType.PONTO_E_VIRGULA);
+            }
+            parseDeclaracao();
+        } else if (lookAhead.tokenType == TokenType.ID) {
+            parseAtribuicao();
+            parseDeclaracao();
+        } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) {
+            parseDecl_condicional();
+            parseDeclaracao();
+        } else if (lookAhead.tokenType == TokenType.WHILE_KEYWORD || lookAhead.tokenType == TokenType.FOR_KEYWORD) {
+            parseDeclLaco();
+            parseDeclaracao();
+        } else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) {
+            return;
+        } else {
+            error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
+            sync();
+            if (lookAhead.tokenType != TokenType.EOF && lookAhead.tokenType != TokenType.FECHA_CHAVES) {
+                parseDeclaracao();
+            }
+        }
     }
 
     void parseLsParam(){
