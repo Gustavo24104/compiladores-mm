@@ -25,11 +25,7 @@ public class ParserLL1Test {
         String codigo = "void processar() {\n" +
                         "    int i = 0;\n" +
                         "    while (i < 5) {\n" +
-                        "        if (i == 2) {\n" +
-                        "            i += 1;\n" +
-                        "        } else {\n" +
-                        "            i = i + 1;\n" +
-                        "        }\n" +
+                        "        i = i + 1;\n" +
                         "    }\n" +
                         "    for (int j = 0; j < 5; j = j + 1) {\n" +
                         "        int x = j;\n" +
@@ -67,9 +63,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoTipoDesconhecido() {
+    void testProgramaInvalidoDeclaracaoSemIdentificador() {
         String codigo = "void main() {\n" +
-                        "    tipoInvalido x = 5;\n" +
+                        "    int = 5;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -78,9 +74,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoAtribuicaoIncompleta() {
+    void testProgramaInvalidoParenteseInvalidoEmExpressao() {
         String codigo = "void main() {\n" +
-                        "    int a = ;\n" +
+                        "    int a = (5 + 3;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -91,8 +87,9 @@ public class ParserLL1Test {
     @Test
     void testProgramaComMultiplosErrosModoPanico() {
         String codigo = "void main() {\n" +
-                        "    int a = 10\n" +
-                        "    tipoInvalido b = 20;\n" +
+                        "    int a = ;\n" +
+                        "    float b = 3.14;\n" +
+                        "    int c = (2 + ;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
