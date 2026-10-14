@@ -57,6 +57,7 @@ public class ParserLL1Test {
     void testProgramaInvalidoPontoEVirgulaAusente() {
         String codigo = "void main() {\n" +
                         "    int a = 10\n" +
+                        "    int b = 20;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -65,9 +66,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoDeclaracaoSemIdentificador() {
+    void testProgramaInvalidoTipoDesconhecido() {
         String codigo = "void main() {\n" +
-                        "    int = 5;\n" +
+                        "    tipoInvalido x = 5;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -76,11 +77,9 @@ public class ParserLL1Test {
     }
 
     @Test
-    void testProgramaInvalidoParenteseAusenteCondicao() {
+    void testProgramaInvalidoExpressaoMalFormada() {
         String codigo = "void main() {\n" +
-                        "    if a > 5 {\n" +
-                        "        int b = 1;\n" +
-                        "    }\n" +
+                        "    int a = (5 + ;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
@@ -92,8 +91,8 @@ public class ParserLL1Test {
     void testProgramaComMultiplosErrosModoPanico() {
         String codigo = "void main() {\n" +
                         "    int a = 10\n" +
-                        "    int = 5;\n" +
-                        "    float b = 3.14\n" +
+                        "    tipoInvalido b = 20;\n" +
+                        "    int c = (5 + ;\n" +
                         "}";
         assertDoesNotThrow(() -> {
             ParserLL1 parser = new ParserLL1(new LexScanner(codigo));
