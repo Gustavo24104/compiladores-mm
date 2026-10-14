@@ -50,15 +50,6 @@ public class ParserLL1 {
         }
     }
 
-    boolean firstExpression(TokenType tt) {
-        return tt == TokenType.ABRE_PARENTESES ||
-                tt == TokenType.INT_LIT ||
-                tt == TokenType.FLOAT_LIT ||
-                tt == TokenType.STRING_LIT ||
-                tt == TokenType.BOOL_LIT ||
-                tt == TokenType.ID;
-    }
-
     boolean firstEspecificacao_tipo(TokenType tt) {
         return tt == TokenType.INT_KEYWORD ||
                 tt == TokenType.FLOAT_KEYWORD ||
@@ -132,6 +123,7 @@ public class ParserLL1 {
                 lookAhead.tokenType == TokenType.VOID_KEYWORD){ // first de <decl_primaria>
             parseDeclPrim();
             match(TokenType.EOF);
+            System.out.println("");
         } else {
             error("Esperado especificador de tipo");
             sync();
@@ -448,10 +440,6 @@ public class ParserLL1 {
             parseDeclaracao();
         } else if (lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
             parseDeclRetorno();
-            parseDeclRetornoPrime();
-            if (lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
-                match(TokenType.PONTO_E_VIRGULA);
-            }
             parseDeclaracao();
         } else if (lookAhead.tokenType == TokenType.ID) {
             parseAtribuicao();
@@ -462,7 +450,12 @@ public class ParserLL1 {
         } else if (lookAhead.tokenType == TokenType.WHILE_KEYWORD || lookAhead.tokenType == TokenType.FOR_KEYWORD) {
             parseDeclLaco();
             parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) {
+        } else if (firstExp_unaria(lookAhead.tokenType)){
+            parseExpression();
+            match(TokenType.PONTO_E_VIRGULA);
+            parseDeclaracao();
+        }
+        else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) { // prod vazia
             return;
         } else {
             error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
@@ -494,7 +487,7 @@ public class ParserLL1 {
     }
 
     void parseLsExpr(){
-        if(firstExpression(lookAhead.tokenType)) {
+        if(firstExp_unaria(lookAhead.tokenType)) {
             parseExpression();
             parseLsExprPrime();
         } else {
@@ -513,7 +506,7 @@ public class ParserLL1 {
     }
 
     void parseLsExps() {
-        if(firstExpression(lookAhead.tokenType)) {
+        if(firstExp_unaria(lookAhead.tokenType)) {
             parseLsExpr();
         } else { // prod vazia
             return;
@@ -581,6 +574,7 @@ public class ParserLL1 {
     void parseDeclRetorno(){
         if(lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
             match(TokenType.RETURN_KEYWORD);
+            parseDeclRetornoPrime();
         } else {
             error("return");
             sync();
@@ -588,7 +582,7 @@ public class ParserLL1 {
     }
 
     void parseDeclRetornoPrime() {
-        if(firstExpression(lookAhead.tokenType)) {
+        if(firstExp_unaria(lookAhead.tokenType)) {
             parseExpression();
         } else if(lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
             match(TokenType.PONTO_E_VIRGULA);
@@ -598,6 +592,10 @@ public class ParserLL1 {
         }
     }
 
-
+    static void main() {
+        String input = "int 12;";
+        ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
+        pl1.parse$();
+    }
 
 }
