@@ -48,7 +48,7 @@ public class ParserLL1 {
         while(!syncPadrao.contains(lookAhead.tokenType) && lookAhead.tokenType != TokenType.EOF) {
             lookAhead = scanner.nextToken();
         }
-        match(TokenType.PONTO_E_VIRGULA);
+        match(lookAhead.tokenType);
     }
 
     boolean firstEspecificacao_tipo(TokenType tt) {
@@ -581,14 +581,8 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = "void processar() {\n" +
-                "    abcd i = 0;\n" +
-                "    while (i < 5) {\n" +
-                "        i = i + 1;\n" +
-                "    }\n" +
-                "    for (int j = 0; j < 5; j = j + 1;) {\n" +
-                "        int x = j;\n" +
-                "    }\n" +
+        String input = "void main() {\n" +
+                "    int a = 10\n" +
                 "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
