@@ -369,7 +369,7 @@ public class LexScanner {
 
 
         LexScanner sc = new LexScanner(" void main() {\n" +
-                "a: int = 13;\n" +
+                "int a = 13 * 4;\n" +
                 "bool b = 3.14;\n" +
                 "string str = \"hello world!\";\n" +
                 "print(str);\n" +

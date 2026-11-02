@@ -289,6 +289,10 @@ public class ParserLL1 {
             match(TokenType.MINUS_SYM);
             parseExp_mult();
             parseExp_AddPrime();
+        } else if(lookAhead.tokenType == TokenType.MODULO_SYM) {
+            match(TokenType.MODULO_SYM);
+            parseExp_mult();
+            parseExp_AddPrime();
         }
         else { // prod vazia
             return;
@@ -581,8 +585,9 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = "void main() {\n" +
-                "    int a = 10\n" +
+        String input = "void facaIsto() {" +
+                "int a;" +
+                "\n@aaaah ta\n" +
                 "}";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
