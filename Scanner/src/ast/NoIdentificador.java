@@ -3,7 +3,7 @@ import visitor.Visitor;
 
 public class NoIdentificador extends Exp {
     private String name;
-    private Tipo type; // Preparado para a futura tabela de símbolos (conforme nota do enunciado)[cite: 1]
+    private Tipo type;
 
     public NoIdentificador(int line, int column, String name) {
         super(line, column);
