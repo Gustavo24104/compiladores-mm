@@ -1,0 +1,15 @@
+ void processing() {
+  int a;
+  int c = 12;
+  a = c * 2;
+  float _abc = 0.5;
+  _abc = a * (1/_abc);
+  int d = 1 + 2 + 3;
+  if(d == 0) {
+    return;
+  } else if (a == 2){
+    c = 3;
+  } else {
+    a = 12;
+  }
+}

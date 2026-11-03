@@ -224,10 +224,11 @@ public class TreePrinterVisitor implements Visitor<Void> {
         printIndent();
         sb.append("ElseDecl\n");
         indentLevel++;
-        if (node.getCondicao() != node.getCondicao()) { /* safety check */ }
-        if (node.getCondicao() != null) node.getCondicao().accept(this);
-        if (node.getCorpo() != null) node.getCorpo().accept(this);
-        if (node.getIfDecl() != null) node.getIfDecl().accept(this);
+        if (node.getCorpo() != null) {
+            node.getCorpo().accept(this);
+        } if (node.getIfDecl() != null) {
+            node.getIfDecl().accept(this);
+        }
         indentLevel--;
         return null;
     }

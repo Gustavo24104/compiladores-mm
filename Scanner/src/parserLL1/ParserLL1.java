@@ -691,30 +691,30 @@ public class ParserLL1 {
     }
 
     static void main() {
-//        String input = """
-//                @descobre se um numero eh primo\s
-//                bool ehPrimo(int x) {
-//                  if (x % 2 == 0) {
-//                    return false;
-//                  }
-//                  for (int i = 3; i < x; i += 2;) {
-//                    if (x % i == 0) {
-//                      return false;
-//                    }
-//                  }
-//                  return true;
-//                }
-//
-//                @imprimir primos ate 1000
-//                void main() {
-//                  int i = 1;
-//                  while (i <= 1000) {
-//                    if (ehPrimo(i)) {
-//                      print(i);
-//                      i += 1;
-//                    }
-//                  }
-//                }\s""";
+        String input = """
+                @descobre se um numero eh primo\s
+                bool ehPrimo(int x) {
+                  if (x % 2 == 0) {
+                    return false;
+                  }
+                  for (int i = 3; i < x; i += 2;) {
+                    if (x % i == 0) {
+                      return false;
+                    }
+                  }
+                  return true;
+                }
+
+                @imprimir primos ate 1000
+                void main() {
+                  int i = 1;
+                  while (i <= 1000) {
+                    if (ehPrimo(i)) {
+                      print(i);
+                      i += 1;
+                    }
+                  }
+                }\s""";
 
 //        String input =  "int mdc(int a, int b) {\n" +
 //                "    if(b == 0) {\n" +
@@ -726,22 +726,22 @@ public class ParserLL1 {
 //                "\n";
 
 
-        String input = """
-                 void processing() {
-                  int a;
-                  int c = 12;
-                  a = c * 2;
-                  float _abc = 0.5;
-                  _abc = a * (1/_abc);
-                  int d = 1 + 2 + 3;
-                  if(d == 0) {
-                    return;
-                  } else if (a == 2){
-                    c = 3;
-                  } else {
-                    a = 12;
-                  }
-                }""";
+//        String input = """
+//                 void processing() {
+//                  int a;
+//                  int c = 12;
+//                  a = c * 2;
+//                  float _abc = 0.5;
+//                  _abc = a * (1/_abc);
+//                  int d = 1 + 2 + 3;
+//                  if(d == 0) {
+//                    return;
+//                  } else if (a == 2){
+//                    c = 3;
+//                  } else {
+//                    a = 12;
+//                  }
+//                }""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 
         NoInicial root = pl1.parse$();
