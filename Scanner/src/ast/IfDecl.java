@@ -3,10 +3,10 @@ import visitor.Visitor;
 
 public class IfDecl extends Decl {
     private Exp condicao;
-    private No thenDecl;
-    private No elseDecl;
+    private BlocoDecl thenDecl;
+    private ElseDecl elseDecl;
 
-    public IfDecl(int line, int column, Exp condicao, No thenDecl, No elseDecl) {
+    public IfDecl(int line, int column, Exp condicao, BlocoDecl thenDecl, ElseDecl elseDecl) {
         super(line, column);
         this.condicao = condicao;
         this.thenDecl = thenDecl;

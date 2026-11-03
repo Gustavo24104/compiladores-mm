@@ -6,9 +6,9 @@ public class DeclFunc extends Decl_primaria {
     private Tipo type;
     private String id;
     private List<ParamNo> params;
-    private No corpo;
+    private BlocoDecl corpo;
 
-    public DeclFunc(int line, int column, Tipo type, String id, List<ParamNo> params, No corpo) {
+    public DeclFunc(int line, int column, Tipo type, String id, List<ParamNo> params, BlocoDecl corpo) {
         super(line, column);
         this.type = type;
         this.id = id;

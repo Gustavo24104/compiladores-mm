@@ -585,10 +585,30 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = "void facaIsto() {" +
-                "int a;" +
-                "\n@aaaah ta\n" +
-                "}";
+        String input = """
+                @descobre se um numero eh primo\s
+                bool ehPrimo(int x) {
+                  if (x % 2 == 0) {
+                    return false;
+                  }
+                  for (int i = 3; i < x; i += 2;) {
+                    else if (x % i == 0) {
+                      return false;
+                    }
+                  }
+                  return true;
+                }
+                
+                @imprimir primos ate 1000
+                void main() {
+                  int i = 1;
+                  while (i <= 1000) {
+                    if (ehPrimo(i)) {
+                      print(i);
+                      i += 1;
+                    }
+                  }
+                }\s""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
         pl1.parse$();
     }

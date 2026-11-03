@@ -5,9 +5,9 @@ public class ForDecl extends Decl {
     private Decl init;
     private Exp condicao;
     private Exp atrib;
-    private No corpo;
+    private BlocoDecl corpo;
 
-    public ForDecl(int line, int column, Decl init, Exp condicao, Exp atrib, No corpo) {
+    public ForDecl(int line, int column, Decl init, Exp condicao, Exp atrib, BlocoDecl corpo) {
         super(line, column);
         this.init = init;
         this.condicao = condicao;
