@@ -171,7 +171,8 @@ public class TreePrinterVisitor implements Visitor<Void> {
     @Override
     public Void visitComandoExp(ComandoExp node) {
         printIndent();
-        sb.append("ComandoExp\n");
+        String op = node.getOp() != null ? node.getOp() : "";
+        sb.append("ComandoExp").append("(").append(op).append(")\n");
         indentLevel++;
         if (node.getId() != null) node.getId().accept(this);
         if (node.getValue() != null) node.getValue().accept(this);

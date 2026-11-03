@@ -4,10 +4,10 @@ import visitor.Visitor;
 public class ForDecl extends Decl {
     private Decl init;
     private Exp condicao;
-    private Exp atrib;
+    private Decl atrib;
     private BlocoDecl corpo;
 
-    public ForDecl(int line, int column, Decl init, Exp condicao, Exp atrib, BlocoDecl corpo) {
+    public ForDecl(int line, int column, Decl init, Exp condicao, Decl atrib, BlocoDecl corpo) {
         super(line, column);
         this.init = init;
         this.condicao = condicao;
@@ -17,7 +17,7 @@ public class ForDecl extends Decl {
 
     public Decl getInit() { return init; }
     public Exp getCondicao() { return condicao; }
-    public Exp getAtrib() { return atrib; }
+    public Decl getAtrib() { return atrib; }
     public No getCorpo() { return corpo; }
 
     @Override

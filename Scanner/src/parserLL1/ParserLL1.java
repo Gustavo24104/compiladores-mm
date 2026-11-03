@@ -439,7 +439,7 @@ public class ParserLL1 {
             Decl d = parseDeclID();
             Exp e = parseExpression();
             match(TokenType.PONTO_E_VIRGULA);
-            Exp ce = parseComando_exp();
+            Decl ce = parseComando_exp();
             match(TokenType.FECHA_PARENTESES);
             BlocoDecl bd = parseDeclBloco();
 
@@ -476,10 +476,13 @@ public class ParserLL1 {
         return ld;
     }
 
-    Exp parseComando_exp(){
+    Decl parseComando_exp(){
         Exp l = parseExpression();
         Exp exp = parseComando_expPrime(l);
         match(TokenType.PONTO_E_VIRGULA);
+//        if(exp == l) { // entao eh chamada (declaracao)
+//            return new ComandoExp()
+//        }
         return exp;
     }
 
@@ -509,7 +512,7 @@ public class ParserLL1 {
             return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "/=");
 
         } else { // prod vazia
-            return l;
+            return new ComandoExp(l.getLine(), l.getColumn(), l, null, null);
         }
     }
 
@@ -704,17 +707,17 @@ public class ParserLL1 {
                   }
                   return true;
                 }
-
+                
                 @imprimir primos ate 1000
                 void main() {
                   int i = 1;
                   while (i <= 1000) {
                     if (ehPrimo(i)) {
                       print(i);
-                      i += 1;
+                      i += double(1, 12, a);
                     }
                   }
-                }\s""";
+                }""";
 
 //        String input =  "int mdc(int a, int b) {\n" +
 //                "    if(b == 0) {\n" +

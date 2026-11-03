@@ -25,7 +25,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
     public String visitAtribExp(AtribExp node) {
         String id = node.getId() != null ? node.getId().accept(this) : "";
         String val = node.getValue() != null ? node.getValue().accept(this) : "";
-        return id + " = " + val + ";";
+        return id +  " " + node.getOp() + " " + val + ";";
     }
 
     @Override
@@ -94,7 +94,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
         String cond = node.getCondicao() != null ? node.getCondicao().accept(this) : "";
         String atrib = node.getAtrib() != null ? node.getAtrib().accept(this) : "";
         String corpo = node.getCorpo() != null ? node.getCorpo().accept(this) : "";
-        return "for (" + init + " " + cond + "; " + atrib + ";) " + corpo;
+        return "for (" + init + " " + cond + "; " + atrib + ") " + corpo;
     }
 
     @Override
@@ -122,7 +122,8 @@ public class SourcePrinterVisitor implements Visitor<String> {
     public String visitComandoExp(ComandoExp node) {
         String id = node.getId() != null ? node.getId().accept(this) : "";
         String val = node.getValue() != null ? node.getValue().accept(this) : "";
-        return id + " = " + val + ";";
+        String op = node.getOp() != null ? node.getOp() : "";
+        return id + op + val + ";";
     }
 
     @Override
