@@ -18,7 +18,7 @@ public class ParserLL1 {
     private LexScanner scanner;
     private Set<TokenType> syncPadrao = new HashSet<>();
 
-    ParserLL1(LexScanner scanner) {
+    public ParserLL1(LexScanner scanner) {
         this.scanner = scanner;
         this.lookAhead = scanner.nextToken();
         syncPadrao.add(TokenType.FECHA_COLCHETE);
@@ -142,7 +142,7 @@ public class ParserLL1 {
         }
     }
 
-    NoInicial parse$() {
+    public NoInicial parse$() {
         if(lookAhead.tokenType == TokenType.INT_KEYWORD ||
                 lookAhead.tokenType == TokenType.FLOAT_KEYWORD ||
                 lookAhead.tokenType == TokenType.BOOL_KEYWORD ||
