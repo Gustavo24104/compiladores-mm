@@ -1,3 +1,5 @@
+package test;
+
 import Scanner.LexScanner;
 import Scanner.Token;
 import Scanner.TokenType;

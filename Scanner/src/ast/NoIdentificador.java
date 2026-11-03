@@ -1,7 +1,7 @@
 package ast;
 import visitor.Visitor;
 
-public class NoIdentificador extends No {
+public class NoIdentificador extends Exp {
     private String name;
     private Tipo type; // Preparado para a futura tabela de símbolos (conforme nota do enunciado)[cite: 1]
 
