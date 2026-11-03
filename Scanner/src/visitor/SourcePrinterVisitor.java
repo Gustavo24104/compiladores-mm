@@ -158,7 +158,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
     public String visitElseDecl(ElseDecl node) {
         String cond = node.getCondicao() != null ? node.getCondicao().accept(this) : "";
         String corpo = node.getCorpo() != null ? node.getCorpo().accept(this) : "";
-        String elseD = node.getElseDecl() != null ? " else " + node.getElseDecl().accept(this) : "";
+        String elseD = node.getIfDecl() != null ? " else " + node.getIfDecl().accept(this) : "";
         return "else if (" + cond + ") " + corpo + elseD;
     }
 }

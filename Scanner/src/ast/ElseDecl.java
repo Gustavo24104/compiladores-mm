@@ -4,14 +4,16 @@ import visitor.Visitor;
 public class ElseDecl extends Decl {
     private Exp condicao;
     private BlocoDecl corpo;
-    private ElseDecl elseDecl; // Nomeado como elseDecl pois 'else' é palavra reservada em Java
+    private IfDecl ifDecl; // Nomeado como elseDecl pois 'else' é palavra reservada em Java
 
-    public ElseDecl(int line, int column, Exp condicao, BlocoDecl corpo, ElseDecl elseDecl) {
+    public ElseDecl(int line, int column, Exp condicao, BlocoDecl corpo, IfDecl elseDecl) {
         super(line, column);
         this.condicao = condicao;
         this.corpo = corpo;
-        this.elseDecl = elseDecl;
+        this.ifDecl = elseDecl;
     }
+
+
 
     public Exp getCondicao() {
         return condicao;
@@ -21,8 +23,8 @@ public class ElseDecl extends Decl {
         return corpo;
     }
 
-    public ElseDecl getElseDecl() {
-        return elseDecl;
+    public IfDecl getIfDecl() {
+        return ifDecl;
     }
 
     @Override

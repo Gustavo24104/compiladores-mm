@@ -14,8 +14,8 @@ public class IfDecl extends Decl {
     }
 
     public Exp getCondicao() { return condicao; }
-    public No getThenDecl() { return thenDecl; }
-    public No getElseDecl() { return elseDecl; }
+    public BlocoDecl getThenDecl() { return thenDecl; }
+    public ElseDecl getElseDecl() { return elseDecl; }
 
     @Override
     public <T> T accept(Visitor<T> visitor) {

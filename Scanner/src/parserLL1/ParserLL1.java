@@ -383,181 +383,224 @@ public class ParserLL1 {
         }
     }
 
-    void parseDecl_condicional() {
+    IfDecl parseDecl_condicional() {
         if(lookAhead.tokenType == TokenType.IF_KEYWORD) {
-            match(TokenType.IF_KEYWORD);
+            Token m = match(TokenType.IF_KEYWORD);
             match(TokenType.ABRE_PARENTESES);
-            parseExpression();
+            Exp e = parseExpression();
             match(TokenType.FECHA_PARENTESES);
-            parseDeclBloco();
-            parseElse();
+            BlocoDecl bd = parseDeclBloco();
+            ElseDecl ed = parseElse();
+            return new IfDecl(m.linha, m.coluna, e, bd, ed);
         } else {
             error("declaracao condicional");
-            sync();
-        }
-    }
-
-    void parseElse() {
-        if(lookAhead.tokenType == TokenType.ELSE_KEYWORD) {
-            match(TokenType.ELSE_KEYWORD);
-            parseElsePrime();
-        } else { // prod vazia
-            return;
-        }
-    }
-
-    void parseElsePrime() {
-        if(lookAhead.tokenType == TokenType.ABRE_CHAVES) { // first de <decl_bloco>
-            parseDeclBloco();
-        } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) { // first de <decl_condicional>
-            parseDecl_condicional();
-        } else {
-            error("else errado");
-            sync();
-        }
-    }
-
-    void parseDeclLaco() {
-        if(lookAhead.tokenType == TokenType.WHILE_KEYWORD) {
-            match(TokenType.WHILE_KEYWORD);
-            match(TokenType.ABRE_PARENTESES);
-            parseExpression();
-            match(TokenType.FECHA_PARENTESES);
-            parseDeclBloco();
-        } else if (lookAhead.tokenType == TokenType.FOR_KEYWORD) {
-            match(TokenType.FOR_KEYWORD);
-            match(TokenType.ABRE_PARENTESES);
-            parseDeclID();
-            parseExpression();
-            match(TokenType.PONTO_E_VIRGULA);
-            parseComando_exp();
-            match(TokenType.FECHA_PARENTESES);
-            parseDeclBloco();
-        } else {
-            error("declaracao de laco (for ou while)");
-            sync();
-        }
-    }
-
-    void parseDeclaracao() {
-        if (firstEspecificacao_tipo(lookAhead.tokenType)) {
-            parseDeclID();
-            parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
-            parseDeclRetorno();
-            parseDeclaracao();
-        } else if (firstExp_unaria(lookAhead.tokenType)) {
-            parseComando_exp();
-            parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) {
-            parseDecl_condicional();
-            parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.WHILE_KEYWORD || lookAhead.tokenType == TokenType.FOR_KEYWORD) {
-            parseDeclLaco();
-            parseDeclaracao();
-        } else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) { // prod vazia
-            return;
-        } else {
-            error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
-            sync();
-        }
-    }
-
-    void parseComando_exp(){
-        parseExpression();
-        parseComando_expPrime();
-        match(TokenType.PONTO_E_VIRGULA);
-    }
-
-    void parseComando_expPrime() {
-        if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
-            match(TokenType.ATRIB_SYM);
-            parseExpression();
-        } else if (lookAhead.tokenType == TokenType.PLUS_EQ_SYM) {
-            match(TokenType.PLUS_EQ_SYM);
-            parseExpression();
-
-        } else if (lookAhead.tokenType == TokenType.MINUS_EQ_SYM) {
-            match(TokenType.MINUS_EQ_SYM);
-            parseExpression();
-
-        } else if(lookAhead.tokenType == TokenType.MULT_EQ_SYM) {
-            match(TokenType.MULT_EQ_SYM);
-            parseExpression();
-
-        } else if(lookAhead.tokenType == TokenType.DIV_EQ_SYM) {
-            match(TokenType.DIV_EQ_SYM);
-            parseExpression();
-
-        } else { // prod vazia
-            return;
-        }
-    }
-
-    void parseLsParam(){
-        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
-            parseEspecificador_Tipo();
-            parseIdentificador();
-            parseLsParamPrime();
-        } else {
-            error("lista de parametros");
-            sync();
-        }
-    }
-
-    void parseLsParamPrime() {
-        if(lookAhead.tokenType == TokenType.VIRGULA) {
-            match(TokenType.VIRGULA);
-            parseLsParam();
-        } else { //prod vazia
-            return;
-        }
-    }
-
-    List<Exp> parseLsExpr(List<Exp> le){
-        if(firstExp_unaria(lookAhead.tokenType)) {
-            le.add(parseExpression());
-            return parseLsExprPrime(le);
-        } else {
-            error("lista de expressoes");
             sync();
             return null;
         }
     }
 
-    List<Exp> parseLsExprPrime(List<Exp> le){
-        if(lookAhead.tokenType == TokenType.VIRGULA) {
-            match(TokenType.VIRGULA);
-            parseLsExpr(le);
-            return le;
+    ElseDecl parseElse() {
+        if(lookAhead.tokenType == TokenType.ELSE_KEYWORD) {
+            match(TokenType.ELSE_KEYWORD);
+            return parseElsePrime();
         } else { // prod vazia
-            return le;
+            return null;
         }
     }
+
+    ElseDecl parseElsePrime() {
+        if(lookAhead.tokenType == TokenType.ABRE_CHAVES) { // first de <decl_bloco>
+            BlocoDecl bd = parseDeclBloco();
+            return new ElseDecl(bd.getLine(), bd.getColumn(), null, bd, null);
+        } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) { // first de <decl_condicional>
+            IfDecl id = parseDecl_condicional();
+            return new ElseDecl(id.getLine(), id.getColumn(), id.getCondicao(), id.getThenDecl(), id);
+        } else {
+            error("else errado");
+            sync();
+            return null;
+        }
+    }
+
+    Decl parseDeclLaco() {
+        if(lookAhead.tokenType == TokenType.WHILE_KEYWORD) {
+            Token m = match(TokenType.WHILE_KEYWORD);
+            match(TokenType.ABRE_PARENTESES);
+            Exp e = parseExpression();
+            match(TokenType.FECHA_PARENTESES);
+            BlocoDecl bd = parseDeclBloco();
+
+            return new WhileDecl(m.linha, m.coluna, e, bd);
+        } else if (lookAhead.tokenType == TokenType.FOR_KEYWORD) {
+            Token m = match(TokenType.FOR_KEYWORD);
+            match(TokenType.ABRE_PARENTESES);
+            Decl d = parseDeclID();
+            Exp e = parseExpression();
+            match(TokenType.PONTO_E_VIRGULA);
+            Exp ce = parseComando_exp();
+            match(TokenType.FECHA_PARENTESES);
+            BlocoDecl bd = parseDeclBloco();
+
+            return new ForDecl(m.linha, m.coluna, d, e, ce, bd);
+        } else {
+            error("declaracao de laco (for ou while)");
+            sync();
+            return null;
+        }
+    }
+
+    List<Decl> parseDeclaracao() {
+        List<Decl> ld = new ArrayList<>();
+
+        while(true) {
+            if (firstEspecificacao_tipo(lookAhead.tokenType)) {
+                ld.add(parseDeclID());
+            } else if (lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
+                ld.add(parseDeclRetorno());
+            } else if (firstExp_unaria(lookAhead.tokenType)) {
+                ld.add(parseComando_exp());
+            } else if (lookAhead.tokenType == TokenType.IF_KEYWORD) {
+                ld.add(parseDecl_condicional());
+            } else if (lookAhead.tokenType == TokenType.WHILE_KEYWORD || lookAhead.tokenType == TokenType.FOR_KEYWORD) {
+                ld.add(parseDeclLaco());
+            } else if (lookAhead.tokenType == TokenType.FECHA_CHAVES || lookAhead.tokenType == TokenType.EOF) { // prod vazia
+                break;
+            } else {
+                error("declaração válida (tipo, retorno, atribuição, condição ou laço)");
+                sync();
+                break;
+            }
+        }
+        return ld;
+    }
+
+    Exp parseComando_exp(){
+        Exp l = parseExpression();
+        Exp exp = parseComando_expPrime(l);
+        match(TokenType.PONTO_E_VIRGULA);
+        return exp;
+    }
+
+    Exp parseComando_expPrime(Exp l) {
+        if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
+            match(TokenType.ATRIB_SYM);
+            Exp r = parseExpression();
+            return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "=");
+        } else if (lookAhead.tokenType == TokenType.PLUS_EQ_SYM) {
+            match(TokenType.PLUS_EQ_SYM);
+            Exp r = parseExpression();
+            return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "+=");
+
+        } else if (lookAhead.tokenType == TokenType.MINUS_EQ_SYM) {
+            match(TokenType.MINUS_EQ_SYM);
+            Exp r = parseExpression();
+            return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "-=");
+
+        } else if(lookAhead.tokenType == TokenType.MULT_EQ_SYM) {
+            match(TokenType.MULT_EQ_SYM);
+            Exp r = parseExpression();
+            return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "*=");
+
+        } else if(lookAhead.tokenType == TokenType.DIV_EQ_SYM) {
+            match(TokenType.DIV_EQ_SYM);
+            Exp r = parseExpression();
+            return new AtribExp(lookAhead.linha, lookAhead.coluna, l, r, "/=");
+
+        } else { // prod vazia
+            return l;
+        }
+    }
+
+    List<ParamNo> parseParams() {
+        List<ParamNo> lp = new ArrayList<>();
+        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
+            Tipo t = parseEspecificador_Tipo();
+            String lex = lookAhead.lexema;
+            Exp ni = parseIdentificador();
+            lp.add(new ParamNo(t.getLine(), t.getColumn(), lex, t));
+
+            while(lookAhead.tokenType == TokenType.VIRGULA) {
+                match(TokenType.VIRGULA);
+
+                Tipo proxT = parseEspecificador_Tipo();
+                lex = lookAhead.lexema;
+                Exp proxId = parseIdentificador();
+                lp.add(new ParamNo(proxT.getLine(), proxT.getColumn(), lex, proxT));
+            }
+        }
+        return lp;
+//        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
+//            parseLsParam(lp);
+//            return lp;
+//        } else { // prod vazia
+//            return lp;
+//        }
+    }
+
+//    void parseLsParam(List<ParamNo> lp){
+//        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
+//            Tipo t = parseEspecificador_Tipo();
+//            Exp ni = parseIdentificador();
+//            parseLsParamPrime();
+//        } else {
+//            error("lista de parametros");
+//            sync();
+//        }
+//    }
+//
+//    void parseLsParamPrime() {
+//        if(lookAhead.tokenType == TokenType.VIRGULA) {
+//            match(TokenType.VIRGULA);
+//            parseLsParam();
+//        } else { //prod vazia
+//            return;
+//        }
+//    }
+
+//    List<Exp> parseLsExpr(List<Exp> le){
+//        if(firstExp_unaria(lookAhead.tokenType)) {
+//            le.add(parseExpression());
+//            return parseLsExprPrime(le);
+//        } else {
+//            error("lista de expressoes");
+//            sync();
+//            return null;
+//        }
+//    }
+//
+//    List<Exp> parseLsExprPrime(List<Exp> le){
+//        if(lookAhead.tokenType == TokenType.VIRGULA) {
+//            match(TokenType.VIRGULA);
+//            parseLsExpr(le);
+//            return le;
+//        } else { // prod vazia
+//            return le;
+//        }
+//    }
 
     List<Exp> parseLsExps() {
         List<Exp> le = new ArrayList<>();
         if(firstExp_unaria(lookAhead.tokenType)) {
-            parseLsExpr(le);
-            return le;
-        } else { // prod vazia
-            return le;
+            le.add(parseExpression());
+            while(lookAhead.tokenType == TokenType.VIRGULA) {
+                match(TokenType.VIRGULA);
+                le.add(parseExpression());
+            }
         }
-    }
-
-    void parseParams() {
-        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
-            parseLsParam();
-        } else { // prod vazia
-            return;
-        }
+        return le;
+//        if(firstExp_unaria(lookAhead.tokenType)) {
+//            parseLsExpr(le);
+//            return le;
+//        } else { // prod vazia
+//            return le;
+//        }
     }
 
     Decl parseDeclID(){
         if(firstEspecificacao_tipo(lookAhead.tokenType)) {
             Tipo t = parseEspecificador_Tipo();
             Token anterior = match(TokenType.ID);
-            return parseDeclIDPrime();
+            return parseDeclIDPrime(t, anterior);
         } else {
             error("declaração de identificador");
             sync();
@@ -568,15 +611,20 @@ public class ParserLL1 {
     Decl parseDeclIDPrime(Tipo tipo, Token token) {
         if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
             match(TokenType.ABRE_PARENTESES);
-            parseParams();
+            List<ParamNo> lp = parseParams();
             match(TokenType.FECHA_PARENTESES);
-            parseDeclBloco();
+            BlocoDecl bd = parseDeclBloco();
+
+            return new DeclFunc(bd.getLine(), bd.getColumn(), tipo, token.lexema, lp, bd);
         } else if(lookAhead.tokenType == TokenType.ATRIB_SYM) {
             match(TokenType.ATRIB_SYM);
-            parseExpression();
+            Exp e = parseExpression();
             match(TokenType.PONTO_E_VIRGULA);
+
+            return new DeclVarLocal(token.linha, token.coluna, tipo, token.lexema, e);
         } else if (lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
             match(TokenType.PONTO_E_VIRGULA);
+            return new DeclVarLocal(token.linha, token.coluna, tipo, token.lexema, null);
         } else {
             error("declaracao de ID");
             sync();
@@ -599,37 +647,44 @@ public class ParserLL1 {
 //        }
     }
 
-    void parseDeclBloco(){
+    BlocoDecl parseDeclBloco(){
         if(lookAhead.tokenType == TokenType.ABRE_CHAVES) {
             match(TokenType.ABRE_CHAVES);
-            parseDeclaracao();
-            match(TokenType.FECHA_CHAVES);
+            List<Decl> ld = parseDeclaracao();
+            Token anterior = match(TokenType.FECHA_CHAVES);
+            return new BlocoDecl(anterior.linha, anterior.coluna, ld);
         } else {
             error("declaracao em bloco (esqueceu de fechar ou abrir chaves?)");
             sync();
+            return null;
         }
     }
 
 
-    void parseDeclRetorno(){
+    ReturnDecl parseDeclRetorno(){
         if(lookAhead.tokenType == TokenType.RETURN_KEYWORD) {
-            match(TokenType.RETURN_KEYWORD);
-            parseDeclRetornoPrime();
+            Token anterior = match(TokenType.RETURN_KEYWORD);
+            ReturnDecl rd = new ReturnDecl(anterior.linha, anterior.coluna, null);
+            return parseDeclRetornoPrime(rd);
         } else {
             error("return");
             sync();
+            return null;
         }
     }
 
-    void parseDeclRetornoPrime() {
+    ReturnDecl parseDeclRetornoPrime(ReturnDecl rd) {
         if(firstExp_unaria(lookAhead.tokenType)) {
-            parseExpression();
+            Exp e = parseExpression();
             match(TokenType.PONTO_E_VIRGULA);
+            return new ReturnDecl(rd.getLine(), rd.getColumn(), e);
         } else if(lookAhead.tokenType == TokenType.PONTO_E_VIRGULA) {
             match(TokenType.PONTO_E_VIRGULA);
+            return rd;
         } else {
             error("expressao ou ;");
             sync();
+            return null;
         }
     }
 
