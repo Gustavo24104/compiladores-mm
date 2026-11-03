@@ -18,8 +18,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JUnitAST {
 
-    private static final Path ESPERADO_DIR =
-            Paths.get("src", "test", "esperado");
+    private static final Path ESPERADO_DIR = resolveEsperadoDir();
+
+    private static Path resolveEsperadoDir() {
+        for (String candidate : new String[]{"src/test/esperado", "test/esperado"}) {
+            Path p = Paths.get(candidate);
+            if (Files.isDirectory(p)) return p;
+        }
+        try {
+            Path base = Paths.get(
+                JUnitAST.class.getProtectionDomain().getCodeSource().getLocation().toURI()
+            );
+            for (int i = 1; i <= 6; i++) {
+                for (String rel : new String[]{"src/test/esperado", "test/esperado"}) {
+                    Path target = base.resolve(rel).normalize();
+                    if (Files.isDirectory(target)) return target;
+                }
+                base = base.getParent();
+                if (base == null) break;
+            }
+        } catch (Exception ignored) {}
+        throw new RuntimeException("Diret\u00f3rio 'esperado' n\u00e3o encontrado.");
+    }
 
     private String lerEsperado(String nomeArquivo) throws IOException {
         Path p = ESPERADO_DIR.resolve(nomeArquivo);
