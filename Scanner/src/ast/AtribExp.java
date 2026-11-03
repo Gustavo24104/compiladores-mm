@@ -15,6 +15,7 @@ public class AtribExp extends Exp {
 
     public Exp getId() { return id; }
     public Exp getValue() { return value; }
+    public String getOp() { return op; }
 
     @Override
     public <T> T accept(Visitor<T> visitor) {

@@ -94,7 +94,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
         String cond = node.getCondicao() != null ? node.getCondicao().accept(this) : "";
         String atrib = node.getAtrib() != null ? node.getAtrib().accept(this) : "";
         String corpo = node.getCorpo() != null ? node.getCorpo().accept(this) : "";
-        return "for (" + init + " " + cond + "; " + atrib + ") " + corpo;
+        return "for (" + init + " " + cond + "; " + atrib + ";) " + corpo;
     }
 
     @Override
@@ -156,9 +156,12 @@ public class SourcePrinterVisitor implements Visitor<String> {
 
     @Override
     public String visitElseDecl(ElseDecl node) {
-        String cond = node.getCondicao() != null ? node.getCondicao().accept(this) : "";
-        String corpo = node.getCorpo() != null ? node.getCorpo().accept(this) : "";
-        String elseD = node.getIfDecl() != null ? " else " + node.getIfDecl().accept(this) : "";
-        return "else if (" + cond + ") " + corpo + elseD;
+        if(node.getIfDecl() != null) {
+            return node.getIfDecl().accept(this);
+        }
+        else if (node.getCorpo() != null) {
+            return node.getCorpo().accept(this);
+        }
+        return "";
     }
 }

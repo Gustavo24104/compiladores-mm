@@ -47,7 +47,7 @@ public class TreePrinterVisitor implements Visitor<Void> {
     @Override
     public Void visitAtribExp(AtribExp node) {
         printIndent();
-        sb.append("AtribExp\n");
+        sb.append("AtribExp(op=").append(node.getOp()).append(")\n");
         indentLevel++;
         if (node.getId() != null) node.getId().accept(this);
         if (node.getValue() != null) node.getValue().accept(this);

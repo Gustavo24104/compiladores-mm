@@ -4,6 +4,8 @@
 package parserLL1;
 import Scanner.*;
 import ast.*;
+import visitor.SourcePrinterVisitor;
+import visitor.TreePrinterVisitor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +36,7 @@ public class ParserLL1 {
             System.out.println("Erro durante parsing!\nEsperado: " + expected.toString() + "\nEncontrado: " +
                     lookAhead.tokenType.toString());
             sync();
-            return null;
+            return new Token(lookAhead.lexema, lookAhead.tokenType, -1, -1); // linha e coluna -1 marcam arvore invalida
         }
     }
 
@@ -108,7 +110,7 @@ public class ParserLL1 {
             boolean found = Boolean.parseBoolean(lookAhead.lexema);
             match(TokenType.BOOL_LIT);
             return new ConstExp(anterior.linha, anterior.coluna, found,
-                    new Tipo(anterior.linha, anterior.coluna, "string"));
+                    new Tipo(anterior.linha, anterior.coluna, "bool"));
         } else {
             error("literal ou constante");
             sync();
@@ -689,32 +691,67 @@ public class ParserLL1 {
     }
 
     static void main() {
-        String input = """
-                @descobre se um numero eh primo\s
-                bool ehPrimo(int x) {
-                  if (x % 2 == 0) {
-                    return false;
-                  }
-                  for (int i = 3; i < x; i += 2;) {
-                    else if (x % i == 0) {
-                      return false;
-                    }
-                  }
-                  return true;
-                }
-                
-                @imprimir primos ate 1000
-                void main() {
-                  int i = 1;
-                  while (i <= 1000) {
-                    if (ehPrimo(i)) {
-                      print(i);
-                      i += 1;
-                    }
-                  }
-                }\s""";
+//        String input = """
+//                @descobre se um numero eh primo\s
+//                bool ehPrimo(int x) {
+//                  if (x % 2 == 0) {
+//                    return false;
+//                  }
+//                  for (int i = 3; i < x; i += 2;) {
+//                    if (x % i == 0) {
+//                      return false;
+//                    }
+//                  }
+//                  return true;
+//                }
+//
+//                @imprimir primos ate 1000
+//                void main() {
+//                  int i = 1;
+//                  while (i <= 1000) {
+//                    if (ehPrimo(i)) {
+//                      print(i);
+//                      i += 1;
+//                    }
+//                  }
+//                }\s""";
+
+        String input =  "int mdc(int a, int b) {\n" +
+                "    if(b == 0) {\n" +
+                "      return a;\n" +
+                "    } else {\n" +
+                "      return mdc(b, a % b);\n" +
+                "    }\n" +
+                "}\n" +
+                "\n";
+
+
+//        String input = """
+//                 void processing() {
+//                  int a;
+//                  int c = 12;
+//                  a = c * 2;
+//                  float _abc = 0.5;
+//                  _abc = a * (1/_abc);
+//                  int d = 1 + 2 + 3;
+//                  if(d == 0) {
+//                    return;
+//                  } else if (a == 2){
+//                    c = 3;
+//                  } else {
+//                    a = 12;
+//                  }
+//                }""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
-        pl1.parse$();
+
+        NoInicial root = pl1.parse$();
+        TreePrinterVisitor tp = new TreePrinterVisitor();
+        root.accept(tp);
+        System.out.println(tp.getResult());
+
+        SourcePrinterVisitor sp = new SourcePrinterVisitor();
+        System.out.println(root.accept(sp));
+
     }
 
 }
