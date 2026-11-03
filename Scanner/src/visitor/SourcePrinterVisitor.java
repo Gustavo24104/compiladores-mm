@@ -25,7 +25,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
     public String visitAtribExp(AtribExp node) {
         String id = node.getId() != null ? node.getId().accept(this) : "";
         String val = node.getValue() != null ? node.getValue().accept(this) : "";
-        return id + " = " + val;
+        return id + " = " + val + ";";
     }
 
     @Override
