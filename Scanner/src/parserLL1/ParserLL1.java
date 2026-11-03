@@ -3,8 +3,11 @@
 // Osvaldo Pagliolli de Lollo da Silva - 12321BCC047
 package parserLL1;
 import Scanner.*;
+import ast.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -22,13 +25,16 @@ public class ParserLL1 {
     }
 
 
-    void match(TokenType expected) {
+    Token match(TokenType expected) {
+        Token matched = lookAhead;
         if(expected == lookAhead.tokenType) {
             lookAhead = scanner.nextToken();
+            return matched;
         } else {
             System.out.println("Erro durante parsing!\nEsperado: " + expected.toString() + "\nEncontrado: " +
                     lookAhead.tokenType.toString());
             sync();
+            return null;
         }
     }
 
@@ -81,268 +87,299 @@ public class ParserLL1 {
     }
 
     // métodos de parsing...
-    void parseConstante() {
+    ConstExp parseConstante() {
+        Token anterior = lookAhead;
         if (lookAhead.tokenType == TokenType.INT_LIT) {
+            int found = Integer.parseInt(lookAhead.lexema);
             match(TokenType.INT_LIT);
+            return new ConstExp(anterior.linha, anterior.coluna, found,
+                    new Tipo(anterior.linha, anterior.coluna, "int"));
         } else if (lookAhead.tokenType == TokenType.FLOAT_LIT) {
+            float found = Float.parseFloat(lookAhead.lexema);
             match(TokenType.FLOAT_LIT);
+            return new ConstExp(anterior.linha, anterior.coluna, found,
+                    new Tipo(anterior.linha, anterior.coluna, "float"));
         } else if (lookAhead.tokenType == TokenType.STRING_LIT) {
+            String found = lookAhead.lexema;
             match(TokenType.STRING_LIT);
+            return new ConstExp(anterior.linha, anterior.coluna, found,
+                    new Tipo(anterior.linha, anterior.coluna, "string"));
         } else if (lookAhead.tokenType == TokenType.BOOL_LIT) {
+            boolean found = Boolean.parseBoolean(lookAhead.lexema);
             match(TokenType.BOOL_LIT);
+            return new ConstExp(anterior.linha, anterior.coluna, found,
+                    new Tipo(anterior.linha, anterior.coluna, "string"));
         } else {
             error("literal ou constante");
             sync();
+            return null;
         }
     }
 
-    void parseIdentificador() {
+    Exp parseIdentificador() {
         if(lookAhead.tokenType == TokenType.ID) {
+            Token anterior = lookAhead;
             match(TokenType.ID);
-            parseIdentificadorPrime();
+            NoIdentificador ni = new NoIdentificador(anterior.linha, anterior.coluna, anterior.lexema);
+            return parseIdentificadorPrime(ni);
         } else {
             error("identificador");
             sync();
+            return null;
         }
     }
 
-    void parseIdentificadorPrime() {
+    Exp parseIdentificadorPrime(NoIdentificador e) {
         if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
-            match(TokenType.ABRE_PARENTESES);
-            parseLsExps();
+            Token anterior = match(TokenType.ABRE_PARENTESES);
+            List<Exp> ls = parseLsExps();
             match(TokenType.FECHA_PARENTESES);
+            return new ChamadaExp(anterior.linha, anterior.coluna, e, ls);
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parse$() {
+    NoInicial parse$() {
         if(lookAhead.tokenType == TokenType.INT_KEYWORD ||
                 lookAhead.tokenType == TokenType.FLOAT_KEYWORD ||
                 lookAhead.tokenType == TokenType.BOOL_KEYWORD ||
                 lookAhead.tokenType == TokenType.STRING_KEYWORD ||
                 lookAhead.tokenType == TokenType.VOID_KEYWORD){ // first de <decl_primaria>
-            parseDeclPrim();
-            match(TokenType.EOF);
+            List<Decl> ls = parseDeclPrim();
+            Token anterior = match(TokenType.EOF);
             System.out.println("Parsing terminado!");
+            return new NoInicial(anterior.linha, anterior.coluna, ls);
         } else {
             error("Esperado especificador de tipo");
             sync();
+            return null;
         }
     }
 
-    void parseEspecificador_Tipo() {
+    Tipo parseEspecificador_Tipo() {
         if(lookAhead.tokenType == TokenType.INT_KEYWORD) {
-            match(TokenType.INT_KEYWORD);
+            Token anterior = match(TokenType.INT_KEYWORD);
+            return new Tipo(anterior.linha, anterior.coluna, "int");
         } else if (lookAhead.tokenType == TokenType.FLOAT_KEYWORD) {
-            match(TokenType.FLOAT_KEYWORD);
+            Token anterior = match(TokenType.FLOAT_KEYWORD);
+            return new Tipo(anterior.linha, anterior.coluna, "float");
         } else if (lookAhead.tokenType == TokenType.BOOL_KEYWORD) {
-            match(TokenType.BOOL_KEYWORD);
+            Token anterior = match(TokenType.BOOL_KEYWORD);
+            return new Tipo(anterior.linha, anterior.coluna, "bool");
         } else if(lookAhead.tokenType == TokenType.STRING_KEYWORD) {
-            match(TokenType.STRING_KEYWORD);
+            Token anterior = match(TokenType.STRING_KEYWORD);
+            return new Tipo(anterior.linha, anterior.coluna, "string");
         } else if(lookAhead.tokenType == TokenType.VOID_KEYWORD) {
-            match(TokenType.VOID_KEYWORD);
+            Token anterior = match(TokenType.VOID_KEYWORD);
+            return new Tipo(anterior.linha, anterior.coluna, "void");
         } else {
             error("especificador de tipo");
             sync();
+            return null;
         }
     }
 
-    void parseExpression(){
-        parseExp_or();
+    Exp parseExpression(){
+        return parseExp_or();
     }
 
-    void parseExp_or() {
-        parseExp_and();
-        parseExp_orPrime();
+    Exp parseExp_or() {
+        Exp left = parseExp_and();
+        return parseExp_orPrime(left);
     }
 
-    void parseExp_orPrime(){
+    Exp parseExp_orPrime(Exp e){
         if(lookAhead.tokenType == TokenType.LOGICAL_OR_SYM) {
-            match(TokenType.LOGICAL_OR_SYM);
-            parseExp_and();
-            parseExp_orPrime();
+            Token ant = match(TokenType.LOGICAL_OR_SYM);
+            Exp right = parseExp_and();
+            Exp newLeft = new BinExp(ant.linha, ant.coluna, e, right, "||");
+            return parseExp_orPrime(newLeft);
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_and(){
-        parseExp_bitor();
-        parseExp_andPrime();
+    Exp parseExp_and(){
+        Exp left = parseExp_bitor();
+        return parseExp_andPrime(left);
     }
 
-    void parseExp_andPrime() {
+    Exp parseExp_andPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.LOGICAL_AND_SYM) {
-            match(TokenType.LOGICAL_AND_SYM);
-            parseExp_bitor();
-            parseExp_andPrime();
+            Token ant = match(TokenType.LOGICAL_AND_SYM);
+            Exp r = parseExp_bitor();
+            return parseExp_andPrime(new BinExp(ant.linha, ant.coluna, e, r, "&&"));
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_bitor() {
-            parseExp_bitXor();
-            parseExp_bitorPrime();
+    Exp parseExp_bitor() {
+        Exp l = parseExp_bitXor();
+        return parseExp_bitorPrime(l);
     }
 
-    void parseExp_bitorPrime() {
+    Exp parseExp_bitorPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.BITWISE_OR_SYM) {
-            match(TokenType.BITWISE_OR_SYM);
-            parseExp_bitXor();
-            parseExp_bitorPrime();
+            Token ant = match(TokenType.BITWISE_OR_SYM);
+            Exp r = parseExp_bitXor();
+            return parseExp_bitorPrime(new BinExp(ant.linha, ant.coluna, e, r, "|"));
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_bitXor() {
-        parseExp_bitAnd();
-        parseExp_bitXorPrime();
+    Exp parseExp_bitXor() {
+        Exp l = parseExp_bitAnd();
+        return parseExp_bitXorPrime(l);
     }
 
-    void parseExp_bitXorPrime() {
+    Exp parseExp_bitXorPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.BITWISE_XOR_SYM) {
-            match(TokenType.BITWISE_XOR_SYM);
-            parseExp_bitAnd();
-            parseExp_bitXorPrime();
+            Token anterior = match(TokenType.BITWISE_XOR_SYM);
+            Exp r =parseExp_bitAnd();
+            return parseExp_bitXorPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "^"));
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_bitAnd() {
-        parseExp_igualdade();
-        parseExp_bitAndPrime();
+    Exp parseExp_bitAnd() {
+        Exp l = parseExp_igualdade();
+        return parseExp_bitAndPrime(l);
     }
 
-    void parseExp_bitAndPrime() {
+    Exp parseExp_bitAndPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.BITWSISE_AND_SYM) {
-            match(TokenType.BITWSISE_AND_SYM);
-            parseExp_igualdade();
-            parseExp_bitAndPrime();
+            Token ant = match(TokenType.BITWSISE_AND_SYM);
+            Exp r = parseExp_igualdade();
+            return parseExp_bitAndPrime(new BinExp(ant.linha, ant.coluna, e, r, "&"));
         } else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_igualdade() {
-        parseExp_rel();
-        parseExp_igualdadePrime();
+    Exp parseExp_igualdade() {
+        Exp l = parseExp_rel();
+        return parseExp_igualdadePrime(l);
     }
 
-    void parseExp_igualdadePrime() {
+    Exp parseExp_igualdadePrime(Exp e) {
         if(lookAhead.tokenType == TokenType.EQ_SYM) {
-            match(TokenType.EQ_SYM);
-            parseExp_rel();
-            parseExp_igualdadePrime();
+            Token ant = match(TokenType.EQ_SYM);
+            Exp r = parseExp_rel();
+            return parseExp_igualdadePrime(new BinExp(ant.linha, ant.coluna, e, r, "=="));
         } else if (lookAhead.tokenType == TokenType.DIFF_SYM) {
-            match(TokenType.DIFF_SYM);
-            parseExp_rel();
-            parseExp_igualdadePrime();
+            Token ant = match(TokenType.DIFF_SYM);
+            Exp r = parseExp_rel();
+            return parseExp_igualdadePrime(new BinExp(ant.linha, ant.coluna, e, r, "!="));
         }
         else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_rel() {
-        parseExp_Add();
-        parseExp_relPrime();
+    Exp parseExp_rel() {
+        Exp l = parseExp_Add();
+        return parseExp_relPrime(l);
     }
 
-    void parseExp_relPrime() {
+    Exp parseExp_relPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.GEQ_SYM) {
-            match(TokenType.GEQ_SYM);
-            parseExp_Add();
-            parseExp_relPrime();
+            Token anterior = match(TokenType.GEQ_SYM);
+            Exp r = parseExp_Add();
+            return parseExp_relPrime(new BinExp(anterior.linha, anterior.coluna, e, r, ">="));
         } else if (lookAhead.tokenType == TokenType.LEQ_SYM) {
-            match(TokenType.LEQ_SYM);
-            parseExp_Add();
-            parseExp_relPrime();
+            Token anterior = match(TokenType.LEQ_SYM);
+            Exp r = parseExp_Add();
+            return parseExp_relPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "<="));
         } else if (lookAhead.tokenType == TokenType.LESS_SYM) {
-            match(TokenType.LESS_SYM);
-            parseExp_Add();
-            parseExp_relPrime();
+            Token anterior = match(TokenType.LESS_SYM);
+            Exp r = parseExp_Add();
+            return parseExp_relPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "<"));
         } else if (lookAhead.tokenType == TokenType.GREAT_SYM) {
-            match(TokenType.GREAT_SYM);
-            parseExp_Add();
-            parseExp_relPrime();
+            Token anterior = match(TokenType.GREAT_SYM);
+            Exp r = parseExp_Add();
+            return parseExp_relPrime(new BinExp(anterior.linha, anterior.coluna, e, r, ">"));
         }
         else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_Add() {
-            parseExp_mult();
-            parseExp_AddPrime();
+    Exp parseExp_Add() {
+        Exp l = parseExp_mult();
+        return parseExp_AddPrime(l);
     }
 
-    void parseExp_AddPrime() {
+    Exp parseExp_AddPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.PLUS_SYM) {
-            match(TokenType.PLUS_SYM);
-            parseExp_mult();
-            parseExp_AddPrime();
+            Token anterior = match(TokenType.PLUS_SYM);
+            Exp r = parseExp_mult();
+            return parseExp_AddPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "+"));
         } else if (lookAhead.tokenType == TokenType.MINUS_SYM) {
-            match(TokenType.MINUS_SYM);
-            parseExp_mult();
-            parseExp_AddPrime();
+            Token anterior = match(TokenType.MINUS_SYM);
+            Exp r = parseExp_mult();
+            return parseExp_AddPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "-"));
         } else if(lookAhead.tokenType == TokenType.MODULO_SYM) {
-            match(TokenType.MODULO_SYM);
-            parseExp_mult();
-            parseExp_AddPrime();
+            Token anterior = match(TokenType.MODULO_SYM);
+            Exp r = parseExp_mult();
+            return parseExp_AddPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "%"));
         }
         else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_mult() {
-            parseExp_Unaria();
-            parseExp_multPrime();
+    Exp parseExp_mult() {
+        Exp l = parseExp_Unaria();
+        return parseExp_multPrime(l);
     }
 
-    void parseExp_multPrime() {
+    Exp parseExp_multPrime(Exp e) {
         if(lookAhead.tokenType == TokenType.MULT_SYM) {
-            match(TokenType.MULT_SYM);
-            parseExp_Unaria();
-            parseExp_multPrime();
+            Token anterior = match(TokenType.MULT_SYM);
+            Exp r = parseExp_Unaria();
+            return parseExp_multPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "*"));
         } else if (lookAhead.tokenType == TokenType.DIV_SYM) {
-            match(TokenType.DIV_SYM);
-            parseExp_Unaria();
-            parseExp_multPrime();
+            Token anterior = match(TokenType.DIV_SYM);
+            Exp r = parseExp_Unaria();
+            return parseExp_multPrime(new BinExp(anterior.linha, anterior.coluna, e, r, "/"));
         }
         else { // prod vazia
-            return;
+            return e;
         }
     }
 
-    void parseExp_Unaria() {
+    Exp parseExp_Unaria() {
         if(lookAhead.tokenType == TokenType.LOGICAL_NOT_SYM) {
-            match(TokenType.LOGICAL_NOT_SYM);
-            parseExp_Unaria();
+            Token anterior = match(TokenType.LOGICAL_NOT_SYM);
+            Exp e = parseExp_Unaria();
+            return new UnaryExp(anterior.linha, anterior.coluna, "!", e);
         } else if (firstPrimaria(lookAhead.tokenType)) {
-            parsePrimaria();
+            return parsePrimaria();
         } else {
             error("expressao mal formada");
             sync();
+            return null;
         }
     }
 
-    void parsePrimaria() {
+    Exp parsePrimaria() {
         if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
             match(TokenType.ABRE_PARENTESES);
-            parseExpression();
+            Exp e = parseExpression();
             match(TokenType.FECHA_PARENTESES);
+            return e;
         } else if(lookAhead.tokenType == TokenType.ID) {
-            parseIdentificador();
+            return parseIdentificador();
         } else if(firstConstante(lookAhead.tokenType)) {
-            parseConstante();
+            return parseConstante();
         } else {
             error("expressao mal formada");
             sync();
+            return null;
         }
     }
 
@@ -477,30 +514,34 @@ public class ParserLL1 {
         }
     }
 
-    void parseLsExpr(){
+    List<Exp> parseLsExpr(List<Exp> le){
         if(firstExp_unaria(lookAhead.tokenType)) {
-            parseExpression();
-            parseLsExprPrime();
+            le.add(parseExpression());
+            return parseLsExprPrime(le);
         } else {
             error("lista de expressoes");
             sync();
+            return null;
         }
     }
 
-    void parseLsExprPrime(){
+    List<Exp> parseLsExprPrime(List<Exp> le){
         if(lookAhead.tokenType == TokenType.VIRGULA) {
             match(TokenType.VIRGULA);
-            parseLsExpr();
+            parseLsExpr(le);
+            return le;
         } else { // prod vazia
-            return;
+            return le;
         }
     }
 
-    void parseLsExps() {
+    List<Exp> parseLsExps() {
+        List<Exp> le = new ArrayList<>();
         if(firstExp_unaria(lookAhead.tokenType)) {
-            parseLsExpr();
+            parseLsExpr(le);
+            return le;
         } else { // prod vazia
-            return;
+            return le;
         }
     }
 
@@ -512,18 +553,19 @@ public class ParserLL1 {
         }
     }
 
-    void parseDeclID(){
+    Decl parseDeclID(){
         if(firstEspecificacao_tipo(lookAhead.tokenType)) {
-            parseEspecificador_Tipo();
-            match(TokenType.ID);
-            parseDeclIDPrime();
+            Tipo t = parseEspecificador_Tipo();
+            Token anterior = match(TokenType.ID);
+            return parseDeclIDPrime();
         } else {
             error("declaração de identificador");
             sync();
+            return null;
         }
     }
 
-    void parseDeclIDPrime() {
+    Decl parseDeclIDPrime(Tipo tipo, Token token) {
         if(lookAhead.tokenType == TokenType.ABRE_PARENTESES) {
             match(TokenType.ABRE_PARENTESES);
             parseParams();
@@ -538,16 +580,23 @@ public class ParserLL1 {
         } else {
             error("declaracao de ID");
             sync();
+            return null;
         }
     }
 
-    void parseDeclPrim(){
-        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
-            parseDeclID();
-            parseDeclPrim();
-        } else { // prod vazia
-            return;
+    List<Decl> parseDeclPrim(){
+        List<Decl> ls = new ArrayList<>();
+        while (firstEspecificacao_tipo(lookAhead.tokenType)) {
+            Decl dcl = parseDeclID();
+            ls.add(dcl);
         }
+        return ls;
+//        if(firstEspecificacao_tipo(lookAhead.tokenType)) {
+//            parseDeclID();
+//            parseDeclPrim();
+//        } else { // prod vazia
+//            return;
+//        }
     }
 
     void parseDeclBloco(){

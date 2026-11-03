@@ -16,7 +16,7 @@ public class ASTtest {
         BinExp soma = new BinExp(1, 11, idA, idB, "+");
         DeclVarGlobal declGlobal = new DeclVarGlobal(1, 1, tipoInt, "x", soma);
 
-        ArrayList<Decl_primaria> listaDecls = new ArrayList<>();
+        ArrayList<Decl> listaDecls = new ArrayList<>();
         listaDecls.add(declGlobal);
         NoInicial raiz = new NoInicial(1, 1, listaDecls);
 

@@ -9,6 +9,7 @@ public class Tipo extends No {
         this.tipo = tipo;
     }
 
+
     public String getTipo() { return tipo; }
 
     @Override

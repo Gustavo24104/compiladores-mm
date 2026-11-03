@@ -145,7 +145,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
     public String visitNoInicial(NoInicial node) {
         StringBuilder sb = new StringBuilder();
         if (node.getDecls() != null) {
-            for (Decl_primaria d : node.getDecls()) {
+            for (Decl d : node.getDecls()) {
                 if (d != null) {
                     sb.append(d.accept(this)).append("\n");
                 }

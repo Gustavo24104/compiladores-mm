@@ -11,6 +11,13 @@ public class NoIdentificador extends Exp {
         this.type = null;
     }
 
+    public NoIdentificador(int line, int column, String name, Tipo t) {
+        super(line, column);
+        this.name = name;
+        this.type = null;
+        type = t;
+    }
+
     public String getName() { return name; }
     public Tipo getType() { return type; }
     public void setType(Tipo type) { this.type = type; }

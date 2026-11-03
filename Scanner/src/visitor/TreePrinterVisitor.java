@@ -211,7 +211,7 @@ public class TreePrinterVisitor implements Visitor<Void> {
         sb.append("NoInicial\n");
         indentLevel++;
         if (node.getDecls() != null) {
-            for (Decl_primaria d : node.getDecls()) {
+            for (Decl d : node.getDecls()) {
                 if (d != null) d.accept(this);
             }
         }
