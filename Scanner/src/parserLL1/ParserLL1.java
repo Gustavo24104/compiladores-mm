@@ -695,29 +695,30 @@ public class ParserLL1 {
 
     static void main() {
 //        String input = """
-//                @descobre se um numero eh primo\s
-//                bool ehPrimo(int x) {
-//                  if (x % 2 == 0) {
-//                    return false;
-//                  }
-//                  for (int i = 3; i < x; i += 2;) {
-//                    if (x % i == 0) {
-//                      return false;
+//                    @descobre se um numero eh primo
+//                    bool ehPrimo(int x) {
+//                      if (x % 2 == 0) {
+//                        return false;
+//                      }
+//                      for (int i = 3; i < x; i += 2;) {
+//                        if (x % i == 0) {
+//                          return false;
+//                        }
+//                      }
+//                      return true;
 //                    }
-//                  }
-//                  return true;
-//                }
 //
-//                @imprimir primos ate 1000
-//                void main() {
-//                  int i = 1;
-//                  while (i <= 1000) {
-//                    if (ehPrimo(i)) {
-//                      print(i);
-//                      i += double(1, 12, a);
+//                    @imprimir primos ate 1000
+//                    void main() {
+//                      int i = 1;
+//                      while (i <= 1000) {
+//                        if (ehPrimo(i)) {
+//                          print(i);
+//                          i += 1;
+//                        }
+//                      }
 //                    }
-//                  }
-//                }""";
+//                    """;
 
 //        String input =  "int mdc(int a, int b) {\n" +
 //                "    if(b == 0) {\n" +
@@ -728,7 +729,7 @@ public class ParserLL1 {
 //                "}\n" +
 //                "\n";
 
-
+//
         String input = """
                  void processing() {
                   int a;

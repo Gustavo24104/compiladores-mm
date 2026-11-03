@@ -44,11 +44,6 @@ NoInicial
             BlocoDecl
                ReturnDecl
             ElseDecl
-               BlocoDecl
-                  AtribExp(op==)
-                     NoIdentificador(c)
-                     ConstExp(value=3)
-                        Tipo(int)
                IfDecl
                   BinExp(op===)
                      NoIdentificador(a)

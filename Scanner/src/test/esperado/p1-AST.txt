@@ -61,9 +61,10 @@ NoInicial
                      NoIdentificador(ehPrimo)
                      NoIdentificador(i)
                   BlocoDecl
-                     ChamadaExp
-                        NoIdentificador(print)
-                        NoIdentificador(i)
+                     ComandoExp()
+                        ChamadaExp
+                           NoIdentificador(print)
+                           NoIdentificador(i)
                      AtribExp(op=+=)
                         NoIdentificador(i)
                         ConstExp(value=1)
