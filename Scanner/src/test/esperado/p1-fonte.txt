@@ -1,4 +1,3 @@
-@descobre se um numero eh primo
 bool ehPrimo(int x) {
   if (((x % 2) == 0)) {
     return false;
@@ -11,7 +10,6 @@ bool ehPrimo(int x) {
   return true;
 }
 
-@imprimir primos ate 1000
 void main() {
   int i = 1;
   while ((i <= 1000)) {

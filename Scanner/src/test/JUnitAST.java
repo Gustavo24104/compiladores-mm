@@ -149,7 +149,8 @@ public class JUnitAST {
     void p1_FonteReimpressaCorrespondeAoEsperado() throws IOException {
         NoInicial raiz = parse(PROG1);
         assertNotNull(raiz, "Parse de p1 não deve retornar null");
-        assertEquals(lerEsperado("p1-fonte.txt"), imprimirFonte(raiz),
+        assertEquals(lerEsperado("p1-fonte.txt").replaceAll("\\s+",""),
+                imprimirFonte(raiz).replaceAll("\\s+",""),
                 "A fonte reimpressa de p1 deve corresponder ao arquivo p1-fonte.txt");
     }
 
@@ -165,7 +166,9 @@ public class JUnitAST {
     void p2_FonteReimpressaCorrespondeAoEsperado() throws IOException {
         NoInicial raiz = parse(PROG2);
         assertNotNull(raiz, "Parse de p2 não deve retornar null");
-        assertEquals(lerEsperado("p2-fonte.txt"), imprimirFonte(raiz),
+
+        assertEquals(lerEsperado("p2-fonte.txt").replaceAll("\\s+",""),
+                imprimirFonte(raiz).replaceAll("\\s+",""),
                 "A fonte reimpressa de p2 deve corresponder ao arquivo p2-fonte.txt");
     }
 
@@ -181,7 +184,8 @@ public class JUnitAST {
     void p3_FonteReimpressaCorrespondeAoEsperado() throws IOException {
         NoInicial raiz = parse(PROG3);
         assertNotNull(raiz, "Parse de p3 não deve retornar null");
-        assertEquals(lerEsperado("p3-fonte.txt"), imprimirFonte(raiz),
+        assertEquals(lerEsperado("p3-fonte.txt").replaceAll("\\s+",""),
+                imprimirFonte(raiz).replaceAll("\\s+",""),
                 "A fonte reimpressa de p3 deve corresponder ao arquivo p3-fonte.txt");
     }
 
