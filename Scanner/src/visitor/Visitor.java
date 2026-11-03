@@ -1,4 +1,5 @@
 package visitor;
+import ast.*;
 
 public interface Visitor<T> {
 
@@ -11,6 +12,7 @@ public interface Visitor<T> {
     T visitDeclVarLocal(DeclVarLocal node);
     T visitDeclFunc(DeclFunc node);
     T visitIfDecl(IfDecl node);
+    T visitElseDecl(ElseDecl node);
     T visitWhileDecl(WhileDecl node);
     T visitForDecl(ForDecl node);
     T visitBlocoDecl(BlocoDecl node);
