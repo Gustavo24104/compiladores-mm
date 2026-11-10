@@ -1,1 +1,1 @@
-Erro na linha 2! a já foi declarado na linha 1
+Erro na linha 5! a já foi declarado na linha 2

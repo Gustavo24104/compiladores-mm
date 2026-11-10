@@ -1,1 +1,1 @@
-Erro na linha 2! x não foi declarado
+Erro na linha 3! x não foi declarado

@@ -76,7 +76,7 @@ public class SymbolTableVisitorTest {
         "  int i = 10;\n" +
         "  int x = 2;\n" +
         "  while(i > 0) {\n" +
-        "    double x = 0.5;\n" +
+        "    float x = 0.5;\n" +
         "    i *= x;\n" +
         "  }\n" +
         "  i *= x;\n" +

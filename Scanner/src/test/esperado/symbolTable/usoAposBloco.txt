@@ -1,1 +1,1 @@
-Erro na linha 6! i não foi declarado
+Erro na linha 7! i não foi declarado
