@@ -6,24 +6,30 @@ import symboltable.Symbol;
 import symboltable.SymbolTable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SymbolTableVisitor implements Visitor<Void> {
     private SymbolTable sst = new StackSymbolTable();
     ArrayList<String> erros = new ArrayList<>();
 
+    // passagem dupla: corpos de funções são analisados apenas após passar por todas as declarações
+    // assim, funções mutuamente recursivas nao causam problemas.
+    ArrayList<No> corposAVisitar = new ArrayList<>();
+    ArrayList<List<ParamNo>> paramsAVisitar = new ArrayList<>();
+
     private void erroRedeclaracao(String id, int linhaAgora, int linhaAnterior) {
         erros.add("Erro na linha " + linhaAgora + "! " + id + " já foi declarado na linha " + linhaAnterior);
     }
 
-    private void erroNaoRedeclarado(String id, int linha) {
+    private void erroNaoDeclarado(String id, int linha) {
         erros.add("Erro na linha " + linha + "! " + id + " não foi declarado");
     }
 
-    private SymbolTable getSymbolTable() {
+    public SymbolTable getSymbolTable() {
         return sst;
     }
 
-    private void printErrors() {
+    public void printErrors() {
         for (var e : erros) {
             System.out.println(e);
         }
@@ -86,19 +92,25 @@ public class SymbolTableVisitor implements Visitor<Void> {
 
     @Override
     public Void visitDeclFunc(DeclFunc node) {
-        assert sst.level() == 0; // nao pode funcao aninhada
+        if(sst.level() != 0) {
+            erros.add("Erro na linha " + node.getLine() + "! Funções aninhadas não são permitidas.");
+        }
+
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
+
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),
                     sst.lookupLocal(node.getId()).getDeclNode().getLine());
         }
 
-        sst.openScope();
-        for (var m : node.getParams()) {
-            m.accept(this);
-        }
-        if(node.getCorpo() != null) node.getCorpo().accept(this);
-        sst.closeScope();
+        paramsAVisitar.add(node.getParams());
+        corposAVisitar.add(node.getCorpo());
+//        sst.openScope();
+//        for (var m : node.getParams()) {
+//            m.accept(this);
+//        }
+//        if(node.getCorpo() != null) node.getCorpo().accept(this);
+//        sst.closeScope();
         return null;
 
     }
@@ -189,7 +201,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
     public Void visitNoIdentificador(NoIdentificador node) {
         node.setDecl(sst.lookup(node.getName()));
         if(node.getDecl() == null) {
-            erroNaoRedeclarado(node.getName(), node.getLine());
+            erroNaoDeclarado(node.getName(), node.getLine());
         }
         return null;
     }
@@ -206,9 +218,22 @@ public class SymbolTableVisitor implements Visitor<Void> {
 
     @Override
     public Void visitNoInicial(NoInicial node) {
+
+        // na primeira passagem não olhamos corpo de função, apenas declaracoes e vai salvando numa lista
         for(var d : node.getDecls()) {
             d.accept(this);
         }
+
+        // na segunda passagem agr checamos os corpos das funções
+        for (int i = 0; i < corposAVisitar.size(); i++) {
+            sst.openScope();
+            for (var m : paramsAVisitar.get(i)) {
+                m.accept(this);
+            }
+            corposAVisitar.get(i).accept(this);
+            sst.closeScope();
+        }
+
         return null;
     }
 }

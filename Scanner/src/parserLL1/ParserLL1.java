@@ -5,6 +5,7 @@ package parserLL1;
 import Scanner.*;
 import ast.*;
 import visitor.SourcePrinterVisitor;
+import visitor.SymbolTableVisitor;
 import visitor.TreePrinterVisitor;
 
 import java.util.ArrayList;
@@ -749,7 +750,26 @@ public class ParserLL1 {
 
 
         String input = """
-                int a = 1 - 2 - 4 * 3;""";
+               void print(string msg) {}
+               
+               
+               int a = 12;
+               void main(int p1) {
+                a += 12;
+                int b = 14;
+                b = a + b;
+                outra(b);
+               }
+               
+               int abcd = 15;
+               void outra(int a) {
+               }
+               s
+               
+               void maisUma() {
+               int a = 12;
+               }
+               """;
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 
         NoInicial root = pl1.parse$();
@@ -760,6 +780,10 @@ public class ParserLL1 {
         SourcePrinterVisitor sp = new SourcePrinterVisitor();
         System.out.println(root.accept(sp));
 
-    }
+        SymbolTableVisitor stv = new SymbolTableVisitor();
+        root.accept(stv);
+        System.out.println(root);
+        stv.printErrors();
 
+    }
 }
