@@ -750,10 +750,12 @@ public class ParserLL1 {
 
 
         String input = """
-int funcaoErrada(int a, int b) {
-  int c = a * b;
-  int a = 14;
-  return c*a;
+void main() {
+  int a = 0;
+  for (int i = 0; i < 10; i += 1;) {
+    a += i * 2;
+  }
+  a -= i; @ erro aqui, i nao foi declarado
 }""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 

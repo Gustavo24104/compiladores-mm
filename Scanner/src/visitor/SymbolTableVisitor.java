@@ -163,11 +163,13 @@ public class SymbolTableVisitor implements Visitor<Void> {
 
     @Override
     public Void visitForDecl(ForDecl node) {
-        if (node.getInit() != null) node.getInit().accept(this);
+        if (node.getInit() != null) {
+            sst.openScope();
+            node.getInit().accept(this);
+        }
         if (node.getCondicao() != null) node.getCondicao().accept(this);
         if (node.getAtrib() != null) node.getAtrib().accept(this);
         if (node.getCorpo() != null) {
-            sst.openScope();
             node.getCorpo().accept(this);
             sst.closeScope();
         }
