@@ -67,7 +67,7 @@ public class SymbolTableVisitorTest {
     }
 
     private List<String> erros(SymbolTableVisitor stv) {
-        return stv.erros;
+        return stv.getErros();
     }
 
     private static final String PROG_SOBREAMENTO =

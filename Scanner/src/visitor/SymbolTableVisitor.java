@@ -12,6 +12,10 @@ public class SymbolTableVisitor implements Visitor<Void> {
     private SymbolTable sst = new StackSymbolTable();
     ArrayList<String> erros = new ArrayList<>();
 
+    public ArrayList<String> getErros() {
+        return erros;
+    }
+
     // passagem dupla: corpos de funções são analisados apenas após passar por todas as declarações
     // assim, funções mutuamente recursivas nao causam problemas.
     ArrayList<No> corposAVisitar = new ArrayList<>();
