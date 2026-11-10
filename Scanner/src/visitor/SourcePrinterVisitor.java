@@ -139,7 +139,7 @@ public class SourcePrinterVisitor implements Visitor<String> {
     @Override
     public String visitParamNo(ParamNo node) {
         String type = node.getType() != null ? node.getType().accept(this) : "";
-        return type + " " + node.getName();
+        return type + " " + node.getId();
     }
 
     @Override

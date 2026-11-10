@@ -730,22 +730,26 @@ public class ParserLL1 {
 //                "\n";
 
 //
+//        String input = """
+//                 void processing() {
+//                  int a;
+//                  int c = 12;
+//                  a = c * 2;
+//                  float _abc = 0.5;
+//                  _abc = a * (1/_abc);
+//                  int d = 1 + 2 + 3;
+//                  if(d == 0) {
+//                    return;
+//                  } else if (a == 2){
+//                    c = 3;
+//                  } else {
+//                    a = 12;
+//                  }
+//                }""";
+
+
         String input = """
-                 void processing() {
-                  int a;
-                  int c = 12;
-                  a = c * 2;
-                  float _abc = 0.5;
-                  _abc = a * (1/_abc);
-                  int d = 1 + 2 + 3;
-                  if(d == 0) {
-                    return;
-                  } else if (a == 2){
-                    c = 3;
-                  } else {
-                    a = 12;
-                  }
-                }""";
+                int a = 1 - 2 - 4 * 3;""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 
         NoInicial root = pl1.parse$();

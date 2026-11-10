@@ -197,7 +197,7 @@ public class TreePrinterVisitor implements Visitor<Void> {
     @Override
     public Void visitParamNo(ParamNo node) {
         printIndent();
-        sb.append("ParamNo(").append(node.getName()).append(")\n");
+        sb.append("ParamNo(").append(node.getId()).append(")\n");
         if (node.getType() != null) {
             indentLevel++;
             node.getType().accept(this);

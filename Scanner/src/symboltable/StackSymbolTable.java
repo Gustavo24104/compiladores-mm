@@ -31,7 +31,7 @@ public class StackSymbolTable implements SymbolTable {
     }
 
     @Override
-    public boolean declare(Symbol s) {
+    public boolean declare(Symbol s) { // falso: já existe aqui
         if (scopes.isEmpty()) {
             openScope();
         }
