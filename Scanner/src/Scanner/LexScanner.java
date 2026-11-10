@@ -288,6 +288,7 @@ public class LexScanner {
             // chegou no \n precisa de um ultimo advance
             if(hasNext() && peek() == '\n') {
                 advance();
+                skipWhitespaceAndComments();
             }
         }
     }

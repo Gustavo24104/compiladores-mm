@@ -750,25 +750,11 @@ public class ParserLL1 {
 
 
         String input = """
-               void print(string msg) {}
-               
-               
-               int a = 12;
-               void main(int p1) {
-                a += 12;
-                int b = 14;
-                b = a + b;
-                outra(b);
-               }
-               
-               int abcd = 15;
-               void outra(int a) {
-               }
-               
-               void maisUma() {
-               int a = 12;
-               }
-               """;
+int funcaoErrada(int a, int b) {
+  int c = a * b;
+  int a = 14;
+  return c*a;
+}""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 
         NoInicial root = pl1.parse$();
