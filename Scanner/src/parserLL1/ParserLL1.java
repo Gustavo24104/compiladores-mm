@@ -764,7 +764,6 @@ public class ParserLL1 {
                int abcd = 15;
                void outra(int a) {
                }
-               s
                
                void maisUma() {
                int a = 12;
@@ -782,7 +781,7 @@ public class ParserLL1 {
 
         SymbolTableVisitor stv = new SymbolTableVisitor();
         root.accept(stv);
-        System.out.println(root);
+//        System.out.println(root);
         stv.printErrors();
 
     }

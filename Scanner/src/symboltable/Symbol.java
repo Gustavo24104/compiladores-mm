@@ -5,7 +5,7 @@ import ast.Decl;
 
 public class Symbol {
     private String name;
-//    private String category;
+    private String category;
     private Decl declNode;
     private Tipo type;
     private int level;
@@ -13,7 +13,6 @@ public class Symbol {
 
     public Symbol(String name, Decl declNode, int level, Tipo type) {
         this.name = name;
-//        this.category = category;
         this.declNode = declNode;
         this.level = level;
         this.type = type;
@@ -27,7 +26,8 @@ public class Symbol {
     }
 
     public String getName() { return name; }
-//    public String getCategory() { return category; }
+    public String getCategory() { return category; }
+    public void setCategory(String cat) {this.category = cat;}
     public Decl getDeclNode() { return declNode; }
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }

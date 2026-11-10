@@ -30,9 +30,15 @@ public class SymbolTableVisitor implements Visitor<Void> {
     }
 
     public void printErrors() {
+        if(erros.isEmpty()) {
+            System.out.println("Passagem de símbolos terminada sem erros");
+            return;
+        }
+
         for (var e : erros) {
             System.out.println(e);
         }
+
     }
 
     @Override
