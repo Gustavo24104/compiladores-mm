@@ -29,11 +29,18 @@ public class TypeCheckerVisitorTest {
     private static final Path RAIZ = resolverRaiz();
 
     private static Path resolverRaiz() {
-        Path base = Paths.get("").toAbsolutePath();
-        for (; base != null; base = base.getParent()) {
-            for (String rel : new String[]{"src/test", "test"}) {
-                Path t = base.resolve(rel);
-                if (Files.isDirectory(t.resolve("programas/tipos"))) return t;
+        List<Path> inicios = new java.util.ArrayList<>();
+        inicios.add(Paths.get("").toAbsolutePath());
+        try {
+            inicios.add(Paths.get(TypeCheckerVisitorTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
+        } catch (Exception ignorada) {
+        }
+        for (Path inicio : inicios) {
+            for (Path base = inicio; base != null; base = base.getParent()) {
+                for (String rel : new String[]{"src/test", "test", "Scanner/src/test"}) {
+                    Path t = base.resolve(rel);
+                    if (Files.isDirectory(t.resolve("programas/tipos"))) return t;
+                }
             }
         }
         throw new IllegalStateException("Diretório test/programas/tipos não encontrado");
