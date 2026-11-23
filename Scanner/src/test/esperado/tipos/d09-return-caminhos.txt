@@ -1,0 +1,5 @@
+linha 12: função 'b' pode terminar sem retornar valor
+linha 17: função 'c' pode terminar sem retornar valor
+linha 31: return sem valor em função que retorna int
+linha 34: função void não pode retornar valor
+linha 40: return: esperado int, veio float

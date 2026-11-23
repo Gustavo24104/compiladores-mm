@@ -1,0 +1,22 @@
+void main() {
+  int a;
+  int b = a;
+  int c;
+  if (b > 0) {
+    c = 1;
+  }
+  int d = c;
+  int e;
+  if (b > 0) {
+    e = 1;
+  } else {
+    e = 2;
+  }
+  int f = e;
+  int g;
+  while (b > 0) {
+    g = 1;
+    b -= 1;
+  }
+  int h = g;
+}

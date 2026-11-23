@@ -1,0 +1,2 @@
+Erro na linha 6! f já foi declarado na linha 3
+Verificação de tipos terminada sem erros

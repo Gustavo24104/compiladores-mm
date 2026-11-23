@@ -74,7 +74,7 @@ public class LexScanner {
     private boolean isOp(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '<' ||
                 c == '>' || c == '!' || c == '=' || c == '%' ||
-                c == '|' || c == '&';
+                c == '|' || c == '&' || c == '^';
     }
 
     // cada função aqui funciona como um dos estados

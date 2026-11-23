@@ -1,0 +1,12 @@
+float dobra(float x) {
+  return x * 2;
+}
+int soma(int a, int b) {
+  return a + b;
+}
+void main() {
+  float a = dobra(1);
+  int b = soma(1, 2.5);
+  int c = soma(1);
+  float d = dobra("x");
+}

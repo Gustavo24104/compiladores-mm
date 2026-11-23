@@ -1,0 +1,7 @@
+void main() {
+  bool a = 1 == 1.0;
+  bool b = 1 != 2.5;
+  bool e = true == false;
+  bool c = 1 == "a";
+  bool d = true == 1;
+}

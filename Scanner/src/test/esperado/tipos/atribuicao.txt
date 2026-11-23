@@ -1,0 +1,4 @@
+linha 7: operador '+=' não se aplica a int e float
+linha 9: operador '+=' não se aplica a string e string
+linha 11: operador '=' não se aplica a bool e int
+linha 12: lado esquerdo da atribuição deve ser uma variável

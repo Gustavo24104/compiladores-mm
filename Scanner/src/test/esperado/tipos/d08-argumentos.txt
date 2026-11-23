@@ -1,0 +1,3 @@
+linha 9: argumento 2 de 'soma': esperado int, veio float
+linha 10: 'soma' espera 2 argumento(s), recebeu 1
+linha 11: argumento 1 de 'dobra': esperado float, veio string

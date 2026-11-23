@@ -1,0 +1,13 @@
+void main() {
+  int i = 1;
+  float f = 1.0;
+  string s = "a";
+  bool b = true;
+  i += 1;
+  i += 1.5;
+  f *= 2;
+  s += "x";
+  b = i > 0;
+  b = 1;
+  1 = i;
+}

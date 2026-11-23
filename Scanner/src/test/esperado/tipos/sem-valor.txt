@@ -1,0 +1,4 @@
+linha 3: aviso: variável 'a' pode ser usada sem valor
+linha 8: aviso: variável 'c' pode ser usada sem valor
+linha 21: aviso: variável 'g' pode ser usada sem valor
+Verificação de tipos terminada sem erros

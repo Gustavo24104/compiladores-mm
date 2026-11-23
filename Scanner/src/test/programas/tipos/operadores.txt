@@ -1,0 +1,10 @@
+void main() {
+  int i = 7 / 2;
+  float f = 7 / 2.0;
+  int r = i % 2;
+  float q = f % 2;
+  bool a = true && 1;
+  bool b = !1;
+  int c = i & 3 | 1 ^ 2;
+  bool d = true < false;
+}

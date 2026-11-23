@@ -2,12 +2,14 @@ package symboltable;
 
 import ast.Tipo;
 import ast.Decl;
+import java.util.List;
 
 public class Symbol {
     private String name;
     private String category;
     private Decl declNode;
     private Tipo type;
+    private List<Tipo> paramTypes;
     private int level;
     private int offset;
 
@@ -31,6 +33,9 @@ public class Symbol {
     public Decl getDeclNode() { return declNode; }
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }
+    public List<Tipo> getParamTypes() { return paramTypes; }
+    public void setParamTypes(List<Tipo> paramTypes) { this.paramTypes = paramTypes; }
+    public boolean isFuncao() { return paramTypes != null; }
     public Tipo getType() { return type; }
     public void setType(Tipo type) { this.type = type; }
 

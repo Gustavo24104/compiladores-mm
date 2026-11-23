@@ -7,6 +7,7 @@ import ast.*;
 import visitor.SourcePrinterVisitor;
 import visitor.SymbolTableVisitor;
 import visitor.TreePrinterVisitor;
+import visitor.TypeCheckerVisitor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -771,6 +772,10 @@ void main() {
         root.accept(stv);
 //        System.out.println(root);
         stv.printErrors();
+
+        TypeCheckerVisitor tcv = new TypeCheckerVisitor();
+        root.accept(tcv);
+        tcv.printMensagens();
 
     }
 }

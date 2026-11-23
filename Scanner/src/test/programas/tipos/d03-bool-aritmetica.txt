@@ -1,0 +1,10 @@
+void main() {
+  int i = 1;
+  bool b = true;
+  int x = i + b;
+  if (i) {
+  }
+  while (i + 1) {
+  }
+  bool c = !i;
+}

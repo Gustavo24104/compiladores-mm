@@ -1,0 +1,9 @@
+int f(int a) {
+  return a;
+}
+int f(float a) {
+  return 1;
+}
+void main() {
+  int x = f(1);
+}

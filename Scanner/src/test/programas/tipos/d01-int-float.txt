@@ -1,0 +1,7 @@
+void main() {
+  float a = 1;
+  float b = a + 2;
+  int c = 1;
+  c = 1.5;
+  c = a;
+}

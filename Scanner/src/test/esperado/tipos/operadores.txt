@@ -1,0 +1,4 @@
+linha 5: operador '%' não se aplica a float e int
+linha 6: operador '&&' não se aplica a bool e int
+linha 7: operador '!' não se aplica a int
+linha 9: operador '<' não se aplica a bool e bool

@@ -82,6 +82,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
     @Override
     public Void visitDeclVarGlobal(DeclVarGlobal node) {
         assert sst.level() == 0;
+        if (node.getAtrib() != null) node.getAtrib().accept(this);
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),
@@ -92,6 +93,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
 
     @Override
     public Void visitDeclVarLocal(DeclVarLocal node) {
+        if (node.getAtrib() != null) node.getAtrib().accept(this);
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),
@@ -107,6 +109,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
         }
 
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
+        newSymbol.setParamTypes(node.getParams().stream().map(ParamNo::getType).toList());
 
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),

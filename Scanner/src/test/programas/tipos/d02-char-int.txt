@@ -1,0 +1,6 @@
+void main() {
+  string s = "n=" + 1;
+  string t = 2 + "x";
+  string u = "v" + 1.5 + true;
+  int n = "a" + 1;
+}
