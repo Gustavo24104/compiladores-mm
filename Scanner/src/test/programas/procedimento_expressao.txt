@@ -1,0 +1,5 @@
+void g() {
+}
+void main() {
+  int x = g();
+}

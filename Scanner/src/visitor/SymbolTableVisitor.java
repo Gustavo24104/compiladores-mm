@@ -106,8 +106,20 @@ public class SymbolTableVisitor implements Visitor<Void> {
     public Void visitDeclFunc(DeclFunc node) {
         if(sst.level() != 0) {
             erros.add("Erro na linha " + node.getLine() + "! Funções aninhadas não são permitidas.");
+            declararFuncao(node);
+            sst.openScope();
+            node.getParams().forEach(p -> p.accept(this));
+            node.getCorpo().accept(this);
+            sst.closeScope();
+            return null;
         }
+        declararFuncao(node);
+        paramsAVisitar.add(node.getParams());
+        corposAVisitar.add(node.getCorpo());
+        return null;
+    }
 
+    private void declararFuncao(DeclFunc node) {
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
         newSymbol.setParamTypes(node.getParams().stream().map(ParamNo::getType).toList());
 
@@ -115,17 +127,6 @@ public class SymbolTableVisitor implements Visitor<Void> {
             erroRedeclaracao(node.getId(), node.getLine(),
                     sst.lookupLocal(node.getId()).getDeclNode().getLine());
         }
-
-        paramsAVisitar.add(node.getParams());
-        corposAVisitar.add(node.getCorpo());
-//        sst.openScope();
-//        for (var m : node.getParams()) {
-//            m.accept(this);
-//        }
-//        if(node.getCorpo() != null) node.getCorpo().accept(this);
-//        sst.closeScope();
-        return null;
-
     }
 
     @Override

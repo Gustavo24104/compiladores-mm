@@ -1,0 +1,2 @@
+Erro na linha 5! Funções aninhadas não são permitidas.
+Verificação de tipos terminada sem erros

@@ -1,0 +1,1 @@
+linha 3: condição de 'if' deve ser bool, mas é int

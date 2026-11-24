@@ -39,11 +39,11 @@ public class TypeCheckerVisitorTest {
             for (Path base = inicio; base != null; base = base.getParent()) {
                 for (String rel : new String[]{"src/test", "test", "Scanner/src/test"}) {
                     Path t = base.resolve(rel);
-                    if (Files.isDirectory(t.resolve("programas/tipos"))) return t;
+                    if (Files.isDirectory(t.resolve("programas"))) return t;
                 }
             }
         }
-        throw new IllegalStateException("Diretório test/programas/tipos não encontrado");
+        throw new IllegalStateException("Diretório test/programas não encontrado");
     }
 
     private static String ler(Path p) throws IOException {
@@ -71,10 +71,10 @@ public class TypeCheckerVisitorTest {
 
     @TestFactory
     Stream<DynamicTest> programasCorrespondemAoEsperado() throws IOException {
-        try (Stream<Path> arquivos = Files.list(RAIZ.resolve("programas/tipos"))) {
+        try (Stream<Path> arquivos = Files.list(RAIZ.resolve("programas"))) {
             List<Path> lista = arquivos.filter(p -> p.toString().endsWith(".txt")).sorted().toList();
             return lista.stream().map(p -> dynamicTest(p.getFileName().toString(), () ->
-                    assertEquals(ler(RAIZ.resolve("esperado/tipos").resolve(p.getFileName())),
+                    assertEquals(ler(RAIZ.resolve("esperado").resolve(p.getFileName())),
                             saida(Files.readString(p)))));
         }
     }

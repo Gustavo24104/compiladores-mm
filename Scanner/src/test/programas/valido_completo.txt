@@ -1,0 +1,40 @@
+@todos os tipos e comandos
+int dobro(int x) {
+  return x * 2;
+}
+void mostra(string s) {
+}
+float media(int a, float b) {
+  return (a + b) / 2;
+}
+bool ehPar(int n) {
+  if (n % 2 == 0) {
+    return true;
+  } else if (n < 0) {
+    return false;
+  } else {
+    return false;
+  }
+}
+void main() {
+  int i = 0;
+  float f = 1;
+  string s = "valor " + i;
+  bool b = true;
+  i = dobro(i) + 1;
+  i += 2;
+  f *= 2.5;
+  f /= i;
+  s = s + f + b;
+  b = ehPar(i) && !(f > 1.5) || s == "x";
+  mostra(s);
+  while (i < 10) {
+    i += 1;
+  }
+  for (int j = 0; j < 3; j += 1;) {
+    f += media(j, f);
+  }
+  if (b) {
+    mostra("sim");
+  }
+}

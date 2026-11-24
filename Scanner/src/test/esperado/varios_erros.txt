@@ -1,0 +1,5 @@
+linha 6: operador '+' não se aplica a int e bool
+linha 7: condição de 'if' deve ser bool, mas é int
+linha 9: 'f' espera 1 argumento(s), recebeu 2
+linha 10: operador '+' não se aplica a int e bool
+linha 11: argumento 1 de 'f': esperado int, veio string

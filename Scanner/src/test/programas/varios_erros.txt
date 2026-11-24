@@ -1,0 +1,12 @@
+int f(int a) {
+  return a;
+}
+void main() {
+  int a = 1;
+  int b = a + true;
+  if (b) {
+  }
+  int c = f(1, 2);
+  bool d = (a + true) > 2;
+  f("x");
+}

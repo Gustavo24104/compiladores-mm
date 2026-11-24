@@ -1,0 +1,6 @@
+int dobro(int x) {
+  return x * 2;
+}
+void main() {
+  int y = dobro("a");
+}
