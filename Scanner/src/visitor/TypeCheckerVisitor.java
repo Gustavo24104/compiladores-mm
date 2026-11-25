@@ -33,7 +33,7 @@ public class TypeCheckerVisitor implements Visitor<Tipo> {
     }
 
     private void erro(No n, String msg) {
-        erros.add("linha " + n.getLine() + ": " + msg);
+        erros.add("Erro do verificador de tipos na linha " + n.getLine() + "! " + msg);
     }
 
     private static boolean is(Tipo t, String nome) { return t.getTipo().equals(nome); }
@@ -208,6 +208,9 @@ public class TypeCheckerVisitor implements Visitor<Tipo> {
             Tipo v = expr(inicializador);
             if (!isErro(v) && !compativel(tipo, v)) {
                 erro(node, "inicialização de '" + id + "': esperado " + nome(tipo) + ", veio " + nome(v));
+            }
+            if(is(v, "VOID")) {
+                erro(node, "variável " + id + "não pode ser do tipo void.");
             }
         }
         if (inicializador != null || retornoAtual == null) comValor.add(node);

@@ -751,19 +751,29 @@ public class ParserLL1 {
 
 
         String input = """
+int soma(int abc) {\s
+    int res = 12;
+    if( (ehPrimo(abc) && !ehPrimo(abc)) && (abc >= 12 || abc < 32) ){ return abc * 3; }
+    else {return 0;}
+}
+
+bool ehPrimo(int n) {\s
+    return true;
+}
+
 void main() {
   int a = 0;
   for (int i = 0; i < 10; i += 1;) {
     a += i * 2;
   }
-  a -= i; @ erro aqui, i nao foi declarado
+  a -= 2; @ erro aqui, i nao foi declarado
 }""";
         ParserLL1 pl1 = new ParserLL1(new LexScanner(input));
 
         NoInicial root = pl1.parse$();
-        TreePrinterVisitor tp = new TreePrinterVisitor();
-        root.accept(tp);
-        System.out.println(tp.getResult());
+//        TreePrinterVisitor tp = new TreePrinterVisitor();
+//        root.accept(tp);
+//        System.out.println(tp.getResult());
 
         SourcePrinterVisitor sp = new SourcePrinterVisitor();
         System.out.println(root.accept(sp));

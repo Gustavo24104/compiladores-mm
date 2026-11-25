@@ -22,11 +22,15 @@ public class SymbolTableVisitor implements Visitor<Void> {
     ArrayList<List<ParamNo>> paramsAVisitar = new ArrayList<>();
 
     private void erroRedeclaracao(String id, int linhaAgora, int linhaAnterior) {
-        erros.add("Erro na linha " + linhaAgora + "! " + id + " já foi declarado na linha " + linhaAnterior);
+        erros.add("Erro de símbolo na linha " + linhaAgora + "! " + id + " já foi declarado na linha " + linhaAnterior);
     }
 
     private void erroNaoDeclarado(String id, int linha) {
-        erros.add("Erro na linha " + linha + "! " + id + " não foi declarado");
+        erros.add("Erro de símbolo na linha " + linha + "! " + id + " não foi declarado");
+    }
+
+    private void erroDeclaracao(String id, int linha) {
+        erros.add("Erro de símbolo na linha " + linha + "! no id " + id + ": tipo ilegal");
     }
 
     public SymbolTable getSymbolTable() {
@@ -84,6 +88,10 @@ public class SymbolTableVisitor implements Visitor<Void> {
         assert sst.level() == 0;
         if (node.getAtrib() != null) node.getAtrib().accept(this);
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
+        if (newSymbol.getType().getTipo().equals("void")) {
+            erroDeclaracao(node.getId(), node.getLine());
+            return null;
+        }
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),
                     sst.lookupLocal(node.getId()).getDeclNode().getLine());
@@ -95,6 +103,10 @@ public class SymbolTableVisitor implements Visitor<Void> {
     public Void visitDeclVarLocal(DeclVarLocal node) {
         if (node.getAtrib() != null) node.getAtrib().accept(this);
         Symbol newSymbol = new Symbol(node.getId(), node, sst.level(), node.getType());
+        if (newSymbol.getType().getTipo().equals("void")) {
+            erroDeclaracao(node.getId(), node.getLine());
+            return null;
+        }
         if(!sst.declare(newSymbol)) { // redeclaracao
             erroRedeclaracao(node.getId(), node.getLine(),
                     sst.lookupLocal(node.getId()).getDeclNode().getLine());
@@ -105,7 +117,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
     @Override
     public Void visitDeclFunc(DeclFunc node) {
         if(sst.level() != 0) {
-            erros.add("Erro na linha " + node.getLine() + "! Funções aninhadas não são permitidas.");
+            erros.add("Erro de símbolo na linha " + node.getLine() + "! Funções aninhadas não são permitidas.");
             declararFuncao(node);
             sst.openScope();
             node.getParams().forEach(p -> p.accept(this));
